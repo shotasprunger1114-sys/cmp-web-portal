@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Web Projects Dashboard — CMP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #0B1A2F;
+    --navy-light: #132240;
+    --gold: #C4953A;
+    --red: #E02020;
+    --white: #FFFFFF;
+    --off-white: #F8F7F4;
+    --border: #E2E0D8;
+    --text: #1A1A1A;
+    --muted: #888;
+    --success: #27AE60;
+    --warning: #F39C12;
+    --info: #2980B9;
+
+    --s-brief: #7B61FF;
+    --s-building: #E02020;
+    --s-review: #F39C12;
+    --s-revisions: #E67E22;
+    --s-launching: #2980B9;
+    --s-live: #27AE60;
+    --s-maintenance: #888;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:var(--off-white); color:var(--text); min-height:100vh; }
+
+  /* NAV */
+  nav {
+    background:var(--navy);
+    padding:16px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:sticky; top:0; z-index:100;
+    box-shadow:0 2px 12px rgba(0,0,0,0.3);
+  }
+  .nav-brand { color:var(--white); font-size:15px; font-weight:700; }
+  .nav-brand span { color:var(--gold); }
+  .nav-right { display:flex; gap:12px; align-items:center; }
+  .nav-tag { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:500; }
+  .nav-btn {
+    background:var(--gold); color:var(--white);
+    padding:8px 18px; border-radius:6px;
+    font-size:13px; font-weight:600;
+    text-decoration:none; border:none; cursor:pointer;
+    font-family:'Inter',sans-serif;
+    transition:background 0.2s;
+  }
+  .nav-btn:hover { background:#D4A84A; }
+  .nav-btn.secondary {
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.3);
+    color:rgba(255,255,255,0.8);
+  }
+  .nav-btn.secondary:hover { background:rgba(255,255,255,0.1); }
+
+  /* MAIN */
+  main { max-width:1400px; margin:0 auto; padding:32px 24px; }
+
+  /* SUMMARY CARDS */
+  .summary-row {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:16px;
+    margin-bottom:32px;
+  }
+  .sum-card {
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px 20px 16px;
+    text-align:center;
+  }
+  .sum-num {
+    font-size:40px;
+    font-weight:700;
+    color:var(--navy);
+    line-height:1;
+    margin-bottom:6px;
+  }
+  .sum-label {
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .sum-card.highlight { background:var(--navy); }
+  .sum-card.highlight .sum-num { color:var(--gold); }
+  .sum-card.highlight .sum-label { color:rgba(255,255,255,0.6); }
+
+  /* FILTER */
+  .filter-row {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:24px;
+    align-items:center;
+  }
+  .filter-row h2 {
+    font-size:20px;
+    font-weight:700;
+    color:var(--navy);
+    margin-right:8px;
+  }
+  .filter-btn {
+    padding:6px 16px;
+    border-radius:20px;
+    border:1.5px solid var(--border);
+    background:var(--white);
+    font-size:13px;
+    font-weight:500;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    transition:all 0.2s;
+    color:var(--text);
+  }
+  .filter-btn:hover { border-color:var(--navy); }
+  .filter-btn.active { background:var(--navy); color:var(--white); border-color:var(--navy); }
+
+  /* SEARCH */
+  .search-wrap {
+    margin-left:auto;
+  }
+  .search-wrap input {
+    padding:8px 16px;
+    border:1.5px solid var(--border);
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    outline:none;
+    width:200px;
+    background:var(--white);
+  }
+  .search-wrap input:focus { border-color:var(--navy); }
+
+  /* PROJECT GRID */
+  .projects-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+    gap:20px;
+  }
+
+  /* PROJECT CARD */
+  .project-card {
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:12px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+  .project-card:hover { box-shadow:0 8px 32px rgba(0,0,0,0.1); transform:translateY(-2px); border-color:var(--gold); }
+  .card-header { padding:18px 20px 0; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .card-client { flex:1; }
+  .card-biz { font-size:17px; font-weight:700; color:var(--navy); margin-bottom:3px; line-height:1.2; }
+  .card-contact { font-size:13px; color:var(--muted); }
+  .status-badge {
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    flex-shrink:0;
+    white-space:nowrap;
+  }
+  .badge-brief      { background:rgba(123,97,255,0.12); color:var(--s-brief); }
+  .badge-building   { background:rgba(224,32,32,0.1);   color:var(--s-building); }
+  .badge-review     { background:rgba(243,156,18,0.12); color:var(--s-review); }
+  .badge-revisions  { background:rgba(230,126,34,0.12); color:var(--s-revisions); }
+  .badge-launching  { background:rgba(41,128,185,0.1);  color:var(--s-launching); }
+  .badge-live       { background:rgba(39,174,96,0.1);   color:var(--s-live); }
+  .badge-maintenance{ background:rgba(136,136,136,0.1); color:var(--s-maintenance); }
+
+  .card-body { padding:14px 20px; }
+  .card-meta { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .meta-tag {
+    display:flex; align-items:center; gap:5px;
+    font-size:12px; color:var(--muted); font-weight:500;
+  }
+  .meta-tag .dot { width:6px; height:6px; border-radius:50%; background:var(--border); flex-shrink:0; }
+
+  /* PIPELINE BAR */
+  .pipeline-bar {
+    display:flex;
+    gap:3px;
+    margin-bottom:12px;
+  }
+  .pipeline-seg {
+    flex:1;
+    height:4px;
+    border-radius:2px;
+    background:var(--border);
+    transition:background 0.3s;
+  }
+  .pipeline-seg.done { background:var(--success); }
+  .pipeline-seg.active { background:var(--gold); }
+
+  .card-note {
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.5;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+
+  .card-footer {
+    padding:12px 20px;
+    border-top:1px solid var(--border);
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  .card-link {
+    font-size:13px;
+    font-weight:600;
+    color:var(--navy);
+    text-decoration:none;
+    padding:6px 14px;
+    background:var(--off-white);
+    border-radius:6px;
+    border:1px solid var(--border);
+    transition:all 0.2s;
+    white-space:nowrap;
+  }
+  .card-link:hover { background:var(--navy); color:var(--white); border-color:var(--navy); }
+  .card-price {
+    margin-left:auto;
+    font-size:15px;
+    font-weight:700;
+    color:var(--navy);
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    grid-column:1/-1;
+    text-align:center;
+    padding:80px 24px;
+    color:var(--muted);
+  }
+  .empty-state .icon { font-size:48px; margin-bottom:16px; }
+  .empty-state h3 { font-size:18px; font-weight:600; color:var(--text); margin-bottom:8px; }
+
+  /* MODAL */
+  .modal-overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.5);
+    z-index:500;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:var(--white);
+    border-radius:16px;
+    max-width:700px;
+    width:100%;
+    max-height:90vh;
+    overflow-y:auto;
+    box-shadow:0 32px 80px rgba(0,0,0,0.3);
+  }
+  .modal-header {
+    padding:24px 28px 20px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    position:sticky; top:0;
+    background:var(--white);
+    z-index:1;
+  }
+  .modal-header-left h2 { font-size:22px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+  .modal-header-left p { font-size:14px; color:var(--muted); }
+  .modal-close {
+    background:var(--off-white); border:none; width:36px; height:36px;
+    border-radius:50%; cursor:pointer; font-size:18px; color:var(--muted);
+    flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    transition:all 0.2s;
+  }
+  .modal-close:hover { background:var(--border); color:var(--text); }
+  .modal-body { padding:24px 28px; }
+
+  .modal-section { margin-bottom:28px; }
+  .modal-section-title {
+    font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    color:var(--gold); margin-bottom:14px;
+  }
+  .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .detail-item {}
+  .detail-label { font-size:12px; color:var(--muted); font-weight:500; margin-bottom:3px; }
+  .detail-value { font-size:14px; font-weight:600; color:var(--text); word-break:break-all; }
+  .detail-value a { color:var(--navy); }
+  .detail-value.full { grid-column:1/-1; }
+
+  /* MILESTONES */
+  .milestone-list { display:flex; flex-direction:column; gap:8px; }
+  .milestone-item {
+    display:flex; align-items:center; gap:12px;
+    padding:10px 14px;
+    background:var(--off-white);
+    border-radius:8px;
+    font-size:14px;
+  }
+  .milestone-check {
+    width:22px; height:22px; border-radius:50%;
+    border:2px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; font-size:12px;
+  }
+  .milestone-item.done .milestone-check { background:var(--success); border-color:var(--success); color:var(--white); }
+  .milestone-label { flex:1; font-weight:500; }
+  .milestone-date { font-size:12px; color:var(--muted); }
+
+  /* MODAL FOOTER */
+  .modal-footer {
+    padding:20px 28px;
+    border-top:1px solid var(--border);
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .modal-action {
+    padding:10px 20px; border-radius:8px;
+    font-size:14px; font-weight:600;
+    border:1.5px solid var(--border);
+    cursor:pointer; font-family:'Inter',sans-serif;
+    text-decoration:none; display:inline-block;
+    color:var(--text); background:var(--white);
+    transition:all 0.2s;
+  }
+  .modal-action:hover { background:var(--navy); color:var(--white); border-color:var(--navy); }
+  .modal-action.primary { background:var(--navy); color:var(--white); border-color:var(--navy); }
+  .modal-action.gold { background:var(--gold); color:var(--white); border-color:var(--gold); }
+
+  /* ADD PROJECT PANEL */
+  .add-json-panel {
+    background:#1e1e1e; color:#d4d4d4;
+    border-radius:8px; padding:20px;
+    font-family:monospace; font-size:13px;
+    line-height:1.6;
+    max-height:300px; overflow-y:auto;
+    margin-top:16px;
+    white-space:pre-wrap;
+    word-break:break-all;
+  }
+  .copy-btn {
+    background:var(--navy); color:var(--white);
+    border:none; border-radius:6px;
+    padding:8px 16px; font-size:13px; font-weight:600;
+    cursor:pointer; font-family:'Inter',sans-serif;
+    transition:background 0.2s; margin-top:10px;
+  }
+  .copy-btn:hover { background:#132240; }
+  .copy-btn.copied { background:var(--success); }
+
+  @media(max-width:640px) {
+    nav { padding:14px 16px; }
+    main { padding:20px 16px; }
+    .detail-grid { grid-template-columns:1fr; }
+    .modal { border-radius:12px; }
+    .modal-body, .modal-header, .modal-footer { padding-left:20px; padding-right:20px; }
+    .projects-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Create More <span>Productions</span> — Web Dashboard</div>
+  <div class="nav-right">
+    <span class="nav-tag">Internal</span>
+    <a href="index.html" target="_blank" class="nav-btn secondary">Client Form ↗</a>
+    <button class="nav-btn" onclick="openAddModal()">+ Add Project</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- SUMMARY -->
+  <div class="summary-row" id="summary-row">
+    <!-- Filled by JS -->
+  </div>
+
+  <!-- FILTER + SEARCH -->
+  <div class="filter-row">
+    <h2>Projects</h2>
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('brief',this)">Brief Received</button>
+    <button class="filter-btn" onclick="setFilter('building',this)">Building</button>
+    <button class="filter-btn" onclick="setFilter('review',this)">In Review</button>
+    <button class="filter-btn" onclick="setFilter('live',this)">Live</button>
+    <div class="search-wrap">
+      <input type="text" id="search-input" placeholder="Search clients..." oninput="renderProjects()"/>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="projects-grid" id="projects-grid">
+    <div class="empty-state"><div class="icon">⏳</div><h3>Loading projects...</h3></div>
+  </div>
+
+</main>
+
+<!-- PROJECT DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <h2 id="modal-title">Project Name</h2>
+        <p id="modal-sub">Contact info</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- Filled by JS -->
+    </div>
+    <div class="modal-footer" id="modal-footer">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ADD PROJECT MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <h2>Add New Project</h2>
+        <p>Fill in the details — Jarvis will update projects.json</p>
+      </div>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">Fill out the fields below and click "Generate Entry". Copy the JSON and paste it into #web-briefs — Jarvis will add it to projects.json and the dashboard updates automatically.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Client Name</label><input type="text" id="add-client" placeholder="Billy Johair" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
+        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Business Name</label><input type="text" id="add-biz" placeholder="Pro Realty Group" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
+        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Email</label><input type="email" id="add-email" placeholder="email@client.com" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
+        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Phone</label><input type="text" id="add-phone" placeholder="(248) 555-0100" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
+        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Industry</label><input type="text" id="add-industry" placeholder="Real Estate" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
+        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Package</label>
+          <select id="add-package" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none;background:white">
+            <option value="landing">Landing Page — $2,500</option>
+            <option value="multipage">Multi-Page — $4,500+</option>
+            <option value="redesign">Redesign — $3,500+</option>
+          </select>
+        </div>
+        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Price ($)</label><input type="number" id="add-price" placeholder="2500" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
+        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Status</label>
+          <select id="add-status" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none;background:white">
+            <option value="brief">Brief Received</option>
+            <option value="building">Building V1</option>
+            <option value="review">Client Review</option>
+            <option value="revisions">Revisions</option>
+            <option value="launching">Launching</option>
+            <option value="live">Live</option>
+            <option value="maintenance">Maintenance</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1"><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Notes</label><textarea id="add-notes" rows="2" placeholder="Any context about the project..." style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none;resize:vertical"></textarea></div>
+      </div>
+      <button class="nav-btn" style="margin-top:16px;width:100%;padding:12px" onclick="generateJSON()">Generate Entry →</button>
+      <div id="json-output" style="display:none">
+        <div class="add-json-panel" id="json-code"></div>
+        <button class="copy-btn" id="copy-btn" onclick="copyJSON()">Copy JSON</button>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px">Paste this in #web-briefs and tag @Jarvis — it'll be added to the live dashboard.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let allProjects = [];
+let activeFilter = 'all';
+let selectedProject = null;
+
+const STATUS_LABELS = {
+  brief: 'Brief Received',
+  building: 'Building V1',
+  review: 'Client Review',
+  revisions: 'Revisions',
+  launching: 'Launching',
+  live: 'Live ✓',
+  maintenance: 'Maintenance'
+};
+
+const PIPELINE_STAGES = ['brief','building','review','revisions','launching','live'];
+const PKG_LABELS = { landing:'Landing Page', multipage:'Multi-Page Site', redesign:'Redesign' };
+
+function statusBadgeClass(s) {
+  const map = { brief:'brief', building:'building', review:'review', revisions:'revisions', launching:'launching', live:'live', maintenance:'maintenance' };
+  return 'badge-' + (map[s] || 'brief');
+}
+
+function pipelineIndex(status) { return PIPELINE_STAGES.indexOf(status); }
+
+function fmtDate(d) {
+  if (!d) return '—';
+  const date = new Date(d + 'T00:00:00');
+  return date.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+function fmtPrice(p) {
+  if (!p) return '—';
+  return '$' + Number(p).toLocaleString();
+}
+
+async function loadProjects() {
+  try {
+    const r = await fetch('projects.json?t=' + Date.now());
+    const data = await r.json();
+    allProjects = data.projects || [];
+  } catch(e) {
+    allProjects = [];
+  }
+  renderSummary();
+  renderProjects();
+}
+
+function renderSummary() {
+  const total = allProjects.length;
+  const active = allProjects.filter(p => !['live','maintenance'].includes(p.status)).length;
+  const live = allProjects.filter(p => p.status === 'live').length;
+  const review = allProjects.filter(p => p.status === 'review').length;
+  const revenue = allProjects.reduce((s,p) => s + (p.price || 0), 0);
+
+  document.getElementById('summary-row').innerHTML = `
+    <div class="sum-card highlight"><div class="sum-num">${total}</div><div class="sum-label">Total Projects</div></div>
+    <div class="sum-card"><div class="sum-num">${active}</div><div class="sum-label">In Progress</div></div>
+    <div class="sum-card"><div class="sum-num">${review}</div><div class="sum-label">Awaiting Review</div></div>
+    <div class="sum-card"><div class="sum-num">${live}</div><div class="sum-label">Live Sites</div></div>
+    <div class="sum-card"><div class="sum-num" style="font-size:28px">$${(revenue/1000).toFixed(1)}k</div><div class="sum-label">Revenue</div></div>
+  `;
+}
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProjects();
+}
+
+function renderProjects() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  let filtered = allProjects;
+  if (activeFilter !== 'all') filtered = filtered.filter(p => p.status === activeFilter);
+  if (search) filtered = filtered.filter(p =>
+    p.businessName.toLowerCase().includes(search) ||
+    p.clientName.toLowerCase().includes(search) ||
+    (p.industry||'').toLowerCase().includes(search)
+  );
+
+  const grid = document.getElementById('projects-grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>No projects found</h3><p>Try a different filter or search.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p => {
+    const stageIdx = pipelineIndex(p.status);
+    const pipelineHTML = PIPELINE_STAGES.map((s, i) => {
+      const cls = i < stageIdx ? 'done' : i === stageIdx ? 'active' : '';
+      return `<div class="pipeline-seg ${cls}"></div>`;
+    }).join('');
+
+    return `
+    <div class="project-card" onclick="openModal('${p.id}')">
+      <div class="card-header">
+        <div class="card-client">
+          <div class="card-biz">${p.businessName}</div>
+          <div class="card-contact">${p.clientName} · ${p.industry}</div>
+        </div>
+        <div class="status-badge ${statusBadgeClass(p.status)}">${STATUS_LABELS[p.status]||p.status}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <div class="meta-tag"><div class="dot"></div>${PKG_LABELS[p.package]||p.package||'—'}</div>
+          <div class="meta-tag"><div class="dot"></div>Started ${fmtDate(p.dateStarted)}</div>
+          ${p.dateLaunched ? `<div class="meta-tag"><div class="dot"></div>Launched ${fmtDate(p.dateLaunched)}</div>` : ''}
+        </div>
+        <div class="pipeline-bar">${pipelineHTML}</div>
+        ${p.notes ? `<div class="card-note">${p.notes}</div>` : ''}
+      </div>
+      <div class="card-footer">
+        ${p.previewUrl ? `<a href="${p.previewUrl}" target="_blank" class="card-link" onclick="event.stopPropagation()">View Live ↗</a>` : ''}
+        ${p.repoUrl ? `<a href="${p.repoUrl}" target="_blank" class="card-link" onclick="event.stopPropagation()">Repo ↗</a>` : ''}
+        <div class="card-price">${fmtPrice(p.price)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openModal(id) {
+  const p = allProjects.find(x => x.id === id);
+  if (!p) return;
+  selectedProject = p;
+
+  document.getElementById('modal-title').textContent = p.businessName;
+  document.getElementById('modal-sub').textContent = p.clientName + ' · ' + p.email + (p.phone ? ' · ' + p.phone : '');
+
+  const stageIdx = pipelineIndex(p.status);
+
+  const milestonesHTML = (p.milestones || PIPELINE_STAGES.map((s,i) => ({
+    label: STATUS_LABELS[s], date: null, done: i <= stageIdx
+  }))).map(m => `
+    <div class="milestone-item ${m.done ? 'done' : ''}">
+      <div class="milestone-check">${m.done ? '✓' : ''}</div>
+      <div class="milestone-label">${m.label}</div>
+      <div class="milestone-date">${m.date ? fmtDate(m.date) : ''}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="modal-section">
+      <div class="modal-section-title">Project Status</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="status-badge ${statusBadgeClass(p.status)}" style="font-size:13px;padding:6px 16px">${STATUS_LABELS[p.status]||p.status}</div>
+        <div style="font-size:14px;color:var(--muted)">Started ${fmtDate(p.dateStarted)}${p.dateLaunched ? ' · Launched ' + fmtDate(p.dateLaunched) : ''}</div>
+      </div>
+      <div class="milestone-list">${milestonesHTML}</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Client & Project Details</div>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="detail-label">Client</div><div class="detail-value">${p.clientName}</div></div>
+        <div class="detail-item"><div class="detail-label">Business</div><div class="detail-value">${p.businessName}</div></div>
+        <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value"><a href="mailto:${p.email}">${p.email}</a></div></div>
+        <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-value">${p.phone || '—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Industry</div><div class="detail-value">${p.industry || '—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Package</div><div class="detail-value">${PKG_LABELS[p.package]||p.package||'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Price</div><div class="detail-value">${fmtPrice(p.price)}</div></div>
+        <div class="detail-item"><div class="detail-label">Domain</div><div class="detail-value">${p.domain || '—'}</div></div>
+        ${p.previewUrl ? `<div class="detail-item detail-value full"><div class="detail-label">Live URL</div><div class="detail-value"><a href="${p.previewUrl}" target="_blank">${p.previewUrl}</a></div></div>` : ''}
+        ${p.repoUrl ? `<div class="detail-item detail-value full"><div class="detail-label">GitHub Repo</div><div class="detail-value"><a href="${p.repoUrl}" target="_blank">${p.repoUrl}</a></div></div>` : ''}
+        ${p.notes ? `<div class="detail-item" style="grid-column:1/-1"><div class="detail-label">Notes</div><div class="detail-value" style="font-weight:400;line-height:1.6">${p.notes}</div></div>` : ''}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('modal-footer').innerHTML = `
+    ${p.previewUrl ? `<a href="${p.previewUrl}" target="_blank" class="modal-action gold">View Live Site ↗</a>` : ''}
+    ${p.repoUrl ? `<a href="${p.repoUrl}" target="_blank" class="modal-action primary">GitHub Repo ↗</a>` : ''}
+    <a href="mailto:${p.email}" class="modal-action">Email Client</a>
+    ${p.phone ? `<a href="tel:${p.phone}" class="modal-action">Call Client</a>` : ''}
+  `;
+
+  document.getElementById('detail-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('detail-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function openAddModal() {
+  document.getElementById('add-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAddModal() {
+  document.getElementById('add-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('json-output').style.display = 'none';
+}
+
+function generateJSON() {
+  const today = new Date().toISOString().split('T')[0];
+  const biz = document.getElementById('add-biz').value.trim();
+  const slug = biz.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') + '-001';
+  const pkg = document.getElementById('add-package').value;
+  const pkgLabels = { landing:'Landing Page', multipage:'Multi-Page Site', redesign:'Redesign' };
+
+  const entry = {
+    id: slug,
+    clientName: document.getElementById('add-client').value.trim(),
+    businessName: biz,
+    industry: document.getElementById('add-industry').value.trim(),
+    email: document.getElementById('add-email').value.trim(),
+    phone: document.getElementById('add-phone').value.trim(),
+    package: pkg,
+    packageLabel: pkgLabels[pkg] || pkg,
+    price: parseInt(document.getElementById('add-price').value) || 0,
+    dateSubmitted: today,
+    dateStarted: today,
+    dateLaunched: null,
+    status: document.getElementById('add-status').value,
+    previewUrl: null,
+    repoUrl: null,
+    domain: '',
+    notes: document.getElementById('add-notes').value.trim(),
+    milestones: [
+      { label:'Brief Received', date: today, done: true },
+      { label:'V1 Built', date: null, done: false },
+      { label:'Internal QC', date: null, done: false },
+      { label:'Client Review', date: null, done: false },
+      { label:'Revisions Done', date: null, done: false },
+      { label:'Launched', date: null, done: false }
+    ]
+  };
+
+  document.getElementById('json-code').textContent = JSON.stringify(entry, null, 2);
+  document.getElementById('json-output').style.display = 'block';
+}
+
+function copyJSON() {
+  const text = document.getElementById('json-code').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied! ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy JSON'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) { closeModal(); closeAddModal(); } });
+});
+
+// ESC to close
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeAddModal(); } });
+
+// LOAD
+loadProjects();
+</script>
+</body>
+</html>

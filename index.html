@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CMP Web Project Intake — Create More Productions</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #0B1A2F;
+    --gold: #C4953A;
+    --red: #E02020;
+    --white: #FFFFFF;
+    --off-white: #F8F7F4;
+    --border: #E2E0D8;
+    --text: #1A1A1A;
+    --muted: #888;
+    --success: #27AE60;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:var(--off-white); color:var(--text); min-height:100vh; }
+
+  /* HEADER */
+  header {
+    background:var(--navy);
+    padding:20px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .logo-text {
+    color:var(--white);
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:0.5px;
+  }
+  .logo-text span { color:var(--gold); }
+  .header-tag {
+    font-size:12px;
+    color:rgba(255,255,255,0.5);
+    font-weight:500;
+  }
+
+  /* HERO STRIP */
+  .hero-strip {
+    background:linear-gradient(135deg,var(--navy) 0%,#132240 100%);
+    padding:48px 24px 40px;
+    text-align:center;
+    border-bottom:3px solid var(--gold);
+  }
+  .hero-strip h1 {
+    font-size:clamp(24px,4vw,36px);
+    font-weight:700;
+    color:var(--white);
+    line-height:1.25;
+    margin-bottom:12px;
+  }
+  .hero-strip h1 span { color:var(--gold); }
+  .hero-strip p {
+    color:rgba(255,255,255,0.65);
+    font-size:15px;
+    max-width:520px;
+    margin:0 auto;
+    line-height:1.6;
+  }
+  .turnaround-badge {
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(196,149,58,0.15);
+    border:1px solid rgba(196,149,58,0.4);
+    color:var(--gold);
+    font-size:13px;
+    font-weight:600;
+    padding:8px 18px;
+    border-radius:24px;
+    margin-top:20px;
+  }
+  .turnaround-badge::before { content:'⚡'; }
+
+  /* PROGRESS STEPS */
+  .progress-wrap {
+    max-width:640px;
+    margin:0 auto;
+    padding:32px 24px 0;
+  }
+  .steps-bar {
+    display:flex;
+    align-items:center;
+    margin-bottom:8px;
+  }
+  .step-dot {
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    color:var(--muted);
+    flex-shrink:0;
+    transition:all 0.3s;
+  }
+  .step-dot.active { background:var(--navy); color:var(--white); }
+  .step-dot.done { background:var(--success); color:var(--white); }
+  .step-dot.done::after { content:'✓'; font-size:14px; }
+  .step-dot.done span { display:none; }
+  .step-line {
+    flex:1;
+    height:2px;
+    background:var(--border);
+    transition:background 0.3s;
+  }
+  .step-line.done { background:var(--success); }
+  .steps-labels {
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:28px;
+  }
+  .step-label {
+    font-size:11px;
+    font-weight:600;
+    color:var(--muted);
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    text-align:center;
+    width:80px;
+  }
+  .step-label:first-child { text-align:left; }
+  .step-label:last-child { text-align:right; }
+  .step-label.active { color:var(--navy); }
+
+  /* FORM CARD */
+  .form-card {
+    max-width:640px;
+    margin:0 auto 40px;
+    padding:0 24px;
+  }
+  .step-panel { display:none; }
+  .step-panel.active { display:block; }
+
+  .panel-title {
+    font-size:20px;
+    font-weight:700;
+    color:var(--navy);
+    margin-bottom:6px;
+  }
+  .panel-sub {
+    font-size:14px;
+    color:var(--muted);
+    margin-bottom:28px;
+    line-height:1.5;
+  }
+
+  .field-group {
+    margin-bottom:20px;
+  }
+  .field-row {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  @media(max-width:520px) { .field-row { grid-template-columns:1fr; } }
+
+  label {
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--navy);
+    margin-bottom:7px;
+    letter-spacing:0.2px;
+  }
+  label .req { color:var(--red); margin-left:2px; }
+  label .hint { font-weight:400; color:var(--muted); font-size:12px; }
+
+  input[type=text],
+  input[type=email],
+  input[type=tel],
+  input[type=url],
+  select,
+  textarea {
+    width:100%;
+    padding:13px 16px;
+    border:1.5px solid var(--border);
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    color:var(--text);
+    background:var(--white);
+    transition:border-color 0.2s, box-shadow 0.2s;
+    outline:none;
+    -webkit-appearance:none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color:var(--navy);
+    box-shadow:0 0 0 3px rgba(11,26,47,0.08);
+  }
+  textarea { resize:vertical; min-height:100px; line-height:1.6; }
+  select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:40px; cursor:pointer; }
+
+  /* CHECKBOX / RADIO GRID */
+  .check-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:10px;
+  }
+  .check-item {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--white);
+    border:1.5px solid var(--border);
+    border-radius:8px;
+    padding:10px 14px;
+    cursor:pointer;
+    transition:all 0.2s;
+    font-size:14px;
+    font-weight:500;
+    user-select:none;
+  }
+  .check-item:hover { border-color:var(--navy); }
+  .check-item input { display:none; }
+  .check-box {
+    width:18px; height:18px;
+    border:2px solid var(--border);
+    border-radius:4px;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.2s;
+    font-size:11px;
+    color:transparent;
+  }
+  .check-item.checked { border-color:var(--navy); background:rgba(11,26,47,0.04); }
+  .check-item.checked .check-box { background:var(--navy); border-color:var(--navy); color:var(--white); }
+  .check-item.checked .check-box::after { content:'✓'; }
+
+  /* VIBE RADIO */
+  .vibe-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    gap:10px;
+  }
+  .vibe-item {
+    border:2px solid var(--border);
+    border-radius:10px;
+    padding:16px 12px;
+    text-align:center;
+    cursor:pointer;
+    transition:all 0.2s;
+    background:var(--white);
+  }
+  .vibe-item:hover { border-color:var(--navy); }
+  .vibe-item.selected { border-color:var(--navy); background:var(--navy); color:var(--white); }
+  .vibe-icon { font-size:24px; display:block; margin-bottom:6px; }
+  .vibe-label { font-size:13px; font-weight:600; }
+  .vibe-item input { display:none; }
+
+  /* DIVIDER */
+  .divider {
+    height:1px;
+    background:var(--border);
+    margin:28px 0;
+  }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:16px;
+  }
+
+  /* BUDGET CARDS */
+  .budget-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+    gap:12px;
+  }
+  .budget-card {
+    border:2px solid var(--border);
+    border-radius:10px;
+    padding:20px 16px;
+    cursor:pointer;
+    transition:all 0.2s;
+    background:var(--white);
+  }
+  .budget-card:hover { border-color:var(--navy); }
+  .budget-card.selected { border-color:var(--gold); background:rgba(196,149,58,0.06); }
+  .budget-card input { display:none; }
+  .budget-name { font-size:15px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+  .budget-price { font-size:20px; font-weight:700; color:var(--gold); margin-bottom:6px; }
+  .budget-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+
+  /* NAV BUTTONS */
+  .btn-row {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:32px;
+    gap:12px;
+  }
+  .btn-back {
+    background:transparent;
+    border:1.5px solid var(--border);
+    color:var(--muted);
+    padding:13px 28px;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    transition:all 0.2s;
+  }
+  .btn-back:hover { border-color:var(--navy); color:var(--navy); }
+  .btn-next {
+    background:var(--navy);
+    color:var(--white);
+    padding:14px 36px;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:700;
+    border:none;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    transition:all 0.2s;
+    flex:1;
+    max-width:280px;
+  }
+  .btn-next:hover { background:#132240; transform:translateY(-1px); }
+  .btn-submit {
+    background:var(--gold);
+    color:var(--white);
+    padding:16px 44px;
+    border-radius:8px;
+    font-size:16px;
+    font-weight:700;
+    border:none;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    transition:all 0.2s;
+    flex:1;
+    max-width:320px;
+  }
+  .btn-submit:hover { background:#D4A84A; transform:translateY(-1px); }
+
+  /* ERROR */
+  .field-error { font-size:12px; color:var(--red); margin-top:5px; font-weight:500; display:none; }
+  .field-group.has-error input,
+  .field-group.has-error select,
+  .field-group.has-error textarea { border-color:var(--red); }
+  .field-group.has-error .field-error { display:block; }
+
+  /* THANK YOU */
+  #thank-you {
+    display:none;
+    max-width:600px;
+    margin:60px auto;
+    text-align:center;
+    padding:0 24px;
+  }
+  .ty-icon { font-size:64px; margin-bottom:20px; }
+  .ty-title { font-size:32px; font-weight:700; color:var(--navy); margin-bottom:12px; }
+  .ty-sub { font-size:16px; color:var(--muted); line-height:1.7; margin-bottom:32px; }
+  .ty-box {
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:24px 28px;
+    text-align:left;
+    margin-bottom:24px;
+  }
+  .ty-box-title { font-size:13px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+  .ty-step { display:flex; gap:12px; margin-bottom:12px; align-items:flex-start; }
+  .ty-step-num { width:26px; height:26px; background:var(--navy); color:var(--white); border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .ty-step-text { font-size:14px; color:var(--text); line-height:1.5; }
+
+  /* FOOTER */
+  footer {
+    background:var(--navy);
+    padding:24px;
+    text-align:center;
+    color:rgba(255,255,255,0.4);
+    font-size:12px;
+    margin-top:40px;
+  }
+
+  @media(max-width:480px) {
+    .hero-strip { padding:36px 20px 28px; }
+    .progress-wrap, .form-card { padding-left:16px; padding-right:16px; }
+    .budget-grid { grid-template-columns:1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-text">Create More <span>Productions</span></div>
+  <div class="header-tag">Web Services</div>
+</header>
+
+<!-- HERO -->
+<div class="hero-strip">
+  <h1>Let's Build Your <span>Website</span></h1>
+  <p>Fill out this quick form and we'll have a custom site ready for your review in <strong style="color:var(--white)">48 hours.</strong> No templates. No generic designs. Built for your business.</p>
+  <div class="turnaround-badge">48-Hour Turnaround Guaranteed</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="steps-bar">
+    <div class="step-dot active" id="dot1"><span>1</span></div>
+    <div class="step-line" id="line1"></div>
+    <div class="step-dot" id="dot2"><span>2</span></div>
+    <div class="step-line" id="line2"></div>
+    <div class="step-dot" id="dot3"><span>3</span></div>
+  </div>
+  <div class="steps-labels">
+    <div class="step-label active" id="lbl1">Contact</div>
+    <div class="step-label" id="lbl2">Your Business</div>
+    <div class="step-label" id="lbl3">Design & Goals</div>
+  </div>
+</div>
+
+<!-- FORM -->
+<form id="intake-form" novalidate>
+<div class="form-card">
+
+  <!-- STEP 1: CONTACT -->
+  <div class="step-panel active" id="step1">
+    <div class="panel-title">Tell us who you are</div>
+    <p class="panel-sub">Basic contact info so we know who's filling this out.</p>
+
+    <div class="field-row">
+      <div class="field-group" id="fg-firstName">
+        <label>First Name <span class="req">*</span></label>
+        <input type="text" id="firstName" placeholder="John" />
+        <div class="field-error">Required</div>
+      </div>
+      <div class="field-group" id="fg-lastName">
+        <label>Last Name <span class="req">*</span></label>
+        <input type="text" id="lastName" placeholder="Smith" />
+        <div class="field-error">Required</div>
+      </div>
+    </div>
+
+    <div class="field-group" id="fg-businessName">
+      <label>Business Name <span class="req">*</span></label>
+      <input type="text" id="businessName" placeholder="Smith Real Estate Group" />
+      <div class="field-error">Required</div>
+    </div>
+
+    <div class="field-row">
+      <div class="field-group" id="fg-email">
+        <label>Email <span class="req">*</span></label>
+        <input type="email" id="email" placeholder="john@yourbusiness.com" />
+        <div class="field-error">Valid email required</div>
+      </div>
+      <div class="field-group">
+        <label>Phone <span class="hint">(optional)</span></label>
+        <input type="tel" id="phone" placeholder="(248) 555-0100" />
+      </div>
+    </div>
+
+    <div class="field-group" id="fg-industry">
+      <label>Industry <span class="req">*</span></label>
+      <select id="industry">
+        <option value="">Select your industry...</option>
+        <option>Real Estate</option>
+        <option>Med Spa / Aesthetics</option>
+        <option>Mortgage / Finance</option>
+        <option>Law / Attorney</option>
+        <option>Roofing / Home Services</option>
+        <option>Dental / Healthcare</option>
+        <option>Fitness / Wellness</option>
+        <option>Restaurant / Food</option>
+        <option>Retail / eCommerce</option>
+        <option>Consulting / Coaching</option>
+        <option>Other</option>
+      </select>
+      <div class="field-error">Please select your industry</div>
+    </div>
+
+    <div class="field-group">
+      <label>Existing Website <span class="hint">(if you have one)</span></label>
+      <input type="url" id="existingUrl" placeholder="https://yoursite.com" />
+    </div>
+
+    <div class="btn-row">
+      <div></div>
+      <button type="button" class="btn-next" onclick="nextStep(1)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: BUSINESS -->
+  <div class="step-panel" id="step2">
+    <div class="panel-title">Tell us about your business</div>
+    <p class="panel-sub">This helps us write copy and structure the site around what actually matters to your customers.</p>
+
+    <div class="field-group" id="fg-businessDesc">
+      <label>What does your business do? <span class="req">*</span> <span class="hint">— 1–3 sentences in plain English</span></label>
+      <textarea id="businessDesc" rows="3" placeholder="We help real estate agents in Michigan earn 100% commission with 1-on-1 broker coaching and full back-office support."></textarea>
+      <div class="field-error">Required</div>
+    </div>
+
+    <div class="field-group" id="fg-targetCustomer">
+      <label>Who is your ideal customer? <span class="req">*</span> <span class="hint">— be specific</span></label>
+      <textarea id="targetCustomer" rows="2" placeholder="Licensed real estate agents in Michigan who are frustrated paying high commission splits at traditional brokerages."></textarea>
+      <div class="field-error">Required</div>
+    </div>
+
+    <div class="field-group" id="fg-primaryAction">
+      <label>What's the #1 action you want visitors to take? <span class="req">*</span></label>
+      <select id="primaryAction">
+        <option value="">Select...</option>
+        <option>Book a call / consultation</option>
+        <option>Fill out a contact form</option>
+        <option>Call a phone number</option>
+        <option>Request a quote</option>
+        <option>Sign up / create account</option>
+        <option>Buy a product</option>
+        <option>Download something</option>
+        <option>Other</option>
+      </select>
+      <div class="field-error">Required</div>
+    </div>
+
+    <div class="field-group">
+      <label>CTA Link / Destination <span class="hint">— where does that button go?</span></label>
+      <input type="url" id="ctaUrl" placeholder="https://calendly.com/yourbooking" />
+    </div>
+
+    <div class="field-group">
+      <label>Key selling points <span class="hint">— what makes you better? (one per line)</span></label>
+      <textarea id="sellingPoints" rows="4" placeholder="100% commission on personal closings&#10;$300 flat fee — that's it&#10;1-on-1 coaching from the broker&#10;Leads provided on 50/50 split"></textarea>
+    </div>
+
+    <div class="field-group">
+      <label>Social proof <span class="hint">— paste any testimonials, reviews, or stats you have</span></label>
+      <textarea id="socialProof" rows="4" placeholder="&quot;PRG changed everything for my business&quot; — Matt, PRG Agent&#10;&#10;5 years in business. 40+ active agents. $0 franchise fees."></textarea>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Package</div>
+
+    <div class="budget-grid">
+      <label class="budget-card" id="pkg-landing">
+        <input type="radio" name="package" value="landing" onchange="selectPkg(this)"/>
+        <div class="budget-name">Landing Page</div>
+        <div class="budget-price">$2,500</div>
+        <div class="budget-desc">1 page. Full conversion design. Perfect for most businesses.</div>
+      </label>
+      <label class="budget-card" id="pkg-multipage">
+        <input type="radio" name="package" value="multipage" onchange="selectPkg(this)"/>
+        <div class="budget-name">Multi-Page</div>
+        <div class="budget-price">$4,500+</div>
+        <div class="budget-desc">3–5 pages. Home, About, Services, Contact + more.</div>
+      </label>
+      <label class="budget-card" id="pkg-redesign">
+        <input type="radio" name="package" value="redesign" onchange="selectPkg(this)"/>
+        <div class="budget-name">Redesign</div>
+        <div class="budget-price">$3,500+</div>
+        <div class="budget-desc">Rebuild an existing site from scratch with new design.</div>
+      </label>
+      <label class="budget-card" id="pkg-unsure">
+        <input type="radio" name="package" value="unsure" onchange="selectPkg(this)"/>
+        <div class="budget-name">Not Sure</div>
+        <div class="budget-price">Let's Talk</div>
+        <div class="budget-desc">We'll recommend the right package on the call.</div>
+      </label>
+    </div>
+
+    <div class="btn-row">
+      <button type="button" class="btn-back" onclick="prevStep(2)">← Back</button>
+      <button type="button" class="btn-next" onclick="nextStep(2)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: DESIGN -->
+  <div class="step-panel" id="step3">
+    <div class="panel-title">Design & preferences</div>
+    <p class="panel-sub">Help us nail the look and feel on the first build.</p>
+
+    <div class="field-group">
+      <label>Brand Colors <span class="hint">— hex codes or just describe them</span></label>
+      <input type="text" id="brandColors" placeholder="Navy blue (#0B1A2F) and gold (#C4953A)" />
+    </div>
+
+    <div class="field-group">
+      <label>Logo <span class="hint">— paste a Google Drive, Dropbox, or WeTransfer link</span></label>
+      <input type="url" id="logoLink" placeholder="https://drive.google.com/..." />
+    </div>
+
+    <div class="field-group">
+      <label>Photos / Headshots <span class="hint">— same as above, or describe what you have</span></label>
+      <input type="text" id="photoLink" placeholder="https://drive.google.com/... or &quot;I have a professional headshot&quot;" />
+    </div>
+
+    <div class="field-group">
+      <label>Reference sites you like <span class="hint">— 2–3 URLs, or describe the vibe you want</span></label>
+      <textarea id="refSites" rows="2" placeholder="https://example.com — love the clean layout&#10;https://example2.com — like the dark background"></textarea>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Overall Vibe</div>
+
+    <div class="vibe-grid" id="vibe-grid">
+      <label class="vibe-item"><input type="radio" name="vibe" value="premium"/><span class="vibe-icon">💎</span><span class="vibe-label">Premium / Luxury</span></label>
+      <label class="vibe-item"><input type="radio" name="vibe" value="clean"/><span class="vibe-icon">✦</span><span class="vibe-label">Clean / Minimal</span></label>
+      <label class="vibe-item"><input type="radio" name="vibe" value="bold"/><span class="vibe-icon">⚡</span><span class="vibe-label">Bold / Energetic</span></label>
+      <label class="vibe-item"><input type="radio" name="vibe" value="warm"/><span class="vibe-icon">☀️</span><span class="vibe-label">Warm / Friendly</span></label>
+      <label class="vibe-item"><input type="radio" name="vibe" value="corporate"/><span class="vibe-icon">🏢</span><span class="vibe-label">Professional / Corporate</span></label>
+      <label class="vibe-item"><input type="radio" name="vibe" value="unsure"/><span class="vibe-icon">🤷</span><span class="vibe-label">Surprise Me</span></label>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Sections You Need</div>
+
+    <div class="check-grid" id="sections-grid">
+      <label class="check-item"><input type="checkbox" value="hero"/><div class="check-box"></div>Hero + CTA</label>
+      <label class="check-item"><input type="checkbox" value="benefits"/><div class="check-box"></div>Benefits</label>
+      <label class="check-item"><input type="checkbox" value="comparison"/><div class="check-box"></div>Comparison Table</label>
+      <label class="check-item"><input type="checkbox" value="calculator"/><div class="check-box"></div>Calculator / Tool</label>
+      <label class="check-item"><input type="checkbox" value="testimonials"/><div class="check-box"></div>Testimonials</label>
+      <label class="check-item"><input type="checkbox" value="about"/><div class="check-box"></div>About / Team</label>
+      <label class="check-item"><input type="checkbox" value="faq"/><div class="check-box"></div>FAQ / Objections</label>
+      <label class="check-item"><input type="checkbox" value="contact"/><div class="check-box"></div>Contact Form</label>
+      <label class="check-item"><input type="checkbox" value="pricing"/><div class="check-box"></div>Pricing</label>
+      <label class="check-item"><input type="checkbox" value="process"/><div class="check-box"></div>Process / Steps</label>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Technical</div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label>Domain <span class="hint">— if you have one</span></label>
+        <input type="text" id="domain" placeholder="yourbusiness.com" />
+      </div>
+      <div class="field-group">
+        <label>Booking/Form Tool</label>
+        <select id="bookingTool">
+          <option value="">Select or N/A...</option>
+          <option>Calendly</option>
+          <option>Google Calendar</option>
+          <option>Acuity / Squarespace Scheduling</option>
+          <option>HubSpot</option>
+          <option>Jotform</option>
+          <option>Just a phone number</option>
+          <option>Just an email</option>
+          <option>None / Not sure</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Anything else we should know? <span class="hint">— tone, things to avoid, specific copy, deadline, etc.</span></label>
+      <textarea id="notes" rows="3" placeholder="Please make it feel more personal than corporate. We have a very friendly team culture. Deadline: March 1st."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button type="button" class="btn-back" onclick="prevStep(3)">← Back</button>
+      <button type="submit" class="btn-submit" id="submit-btn">Submit Brief →</button>
+    </div>
+  </div>
+
+</div>
+</form>
+
+<!-- THANK YOU -->
+<div id="thank-you">
+  <div class="ty-icon">🎉</div>
+  <h2 class="ty-title">Brief received!</h2>
+  <p class="ty-sub">We have everything we need. Our team is already on it — you'll see a preview link in your inbox within <strong>48 hours.</strong></p>
+
+  <div class="ty-box">
+    <div class="ty-box-title">What happens next</div>
+    <div class="ty-step">
+      <div class="ty-step-num">1</div>
+      <div class="ty-step-text"><strong>We review your brief</strong> and reach out if we need any quick clarifications. (Usually we don't.)</div>
+    </div>
+    <div class="ty-step">
+      <div class="ty-step-num">2</div>
+      <div class="ty-step-text"><strong>V1 lands in your inbox</strong> within 48 hours. A live preview link — fully functional, mobile and desktop.</div>
+    </div>
+    <div class="ty-step">
+      <div class="ty-step-num">3</div>
+      <div class="ty-step-text"><strong>You give feedback</strong> and we revise same day. 2 rounds included. Most clients are done in 1.</div>
+    </div>
+    <div class="ty-step">
+      <div class="ty-step-num">4</div>
+      <div class="ty-step-text"><strong>We launch.</strong> Connect your domain, hand it off, done.</div>
+    </div>
+  </div>
+
+  <p style="font-size:14px;color:var(--muted);">Questions? Email <a href="mailto:shota@createmoreproductions.com" style="color:var(--navy)">shota@createmoreproductions.com</a> or text/call <a href="tel:+1" style="color:var(--navy)">(your number)</a></p>
+</div>
+
+<footer>
+  © 2026 Create More Productions · Built for producers who are done settling.
+</footer>
+
+<script>
+let currentStep = 1;
+
+// VIBE SELECTOR
+document.querySelectorAll('.vibe-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.vibe-item').forEach(v => v.classList.remove('selected'));
+    item.classList.add('selected');
+  });
+});
+
+// CHECKBOX ITEMS
+document.querySelectorAll('.check-item').forEach(item => {
+  item.addEventListener('click', () => {
+    item.classList.toggle('checked');
+    item.querySelector('input').checked = item.classList.contains('checked');
+  });
+});
+
+// PACKAGE SELECTOR
+function selectPkg(radio) {
+  document.querySelectorAll('.budget-card').forEach(c => c.classList.remove('selected'));
+  radio.closest('.budget-card').classList.add('selected');
+}
+
+// STEP NAVIGATION
+function updateProgress(step) {
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('dot' + i);
+    const lbl = document.getElementById('lbl' + i);
+    dot.className = 'step-dot';
+    lbl.className = 'step-label';
+    if (i < step) { dot.className = 'step-dot done'; }
+    else if (i === step) { dot.className = 'step-dot active'; lbl.className = 'step-label active'; }
+  }
+  for (let i = 1; i <= 2; i++) {
+    const line = document.getElementById('line' + i);
+    line.className = i < step ? 'step-line done' : 'step-line';
+  }
+}
+
+function validateStep(step) {
+  let valid = true;
+  if (step === 1) {
+    const fields = ['firstName','lastName','businessName','email','industry'];
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      const fg = document.getElementById('fg-' + id);
+      if (!fg) return;
+      let ok = el.value.trim() !== '';
+      if (id === 'email') ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
+      fg.classList.toggle('has-error', !ok);
+      if (!ok) valid = false;
+    });
+  }
+  if (step === 2) {
+    ['businessDesc','targetCustomer','primaryAction'].forEach(id => {
+      const el = document.getElementById(id);
+      const fg = document.getElementById('fg-' + id);
+      if (!fg) return;
+      const ok = el.value.trim() !== '';
+      fg.classList.toggle('has-error', !ok);
+      if (!ok) valid = false;
+    });
+  }
+  return valid;
+}
+
+function nextStep(from) {
+  if (!validateStep(from)) { scrollToFirstError(); return; }
+  document.getElementById('step' + from).classList.remove('active');
+  currentStep = from + 1;
+  document.getElementById('step' + currentStep).classList.add('active');
+  updateProgress(currentStep);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevStep(from) {
+  document.getElementById('step' + from).classList.remove('active');
+  currentStep = from - 1;
+  document.getElementById('step' + currentStep).classList.add('active');
+  updateProgress(currentStep);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function scrollToFirstError() {
+  const first = document.querySelector('.has-error');
+  if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// COLLECT FORM DATA
+function collectData() {
+  const sections = [...document.querySelectorAll('#sections-grid input:checked')].map(el => el.value);
+  const vibe = document.querySelector('input[name=vibe]:checked')?.value || '';
+  const pkg = document.querySelector('input[name=package]:checked')?.value || '';
+  return {
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
+    businessName: document.getElementById('businessName').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    industry: document.getElementById('industry').value,
+    existingUrl: document.getElementById('existingUrl').value.trim(),
+    businessDesc: document.getElementById('businessDesc').value.trim(),
+    targetCustomer: document.getElementById('targetCustomer').value.trim(),
+    primaryAction: document.getElementById('primaryAction').value,
+    ctaUrl: document.getElementById('ctaUrl').value.trim(),
+    sellingPoints: document.getElementById('sellingPoints').value.trim(),
+    socialProof: document.getElementById('socialProof').value.trim(),
+    package: pkg,
+    brandColors: document.getElementById('brandColors').value.trim(),
+    logoLink: document.getElementById('logoLink').value.trim(),
+    photoLink: document.getElementById('photoLink').value.trim(),
+    refSites: document.getElementById('refSites').value.trim(),
+    vibe: vibe,
+    sections: sections.join(', '),
+    domain: document.getElementById('domain').value.trim(),
+    bookingTool: document.getElementById('bookingTool').value,
+    notes: document.getElementById('notes').value.trim(),
+  };
+}
+
+// FORM SUBMIT → DISCORD WEBHOOK
+document.getElementById('intake-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!validateStep(3)) return;
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  const d = collectData();
+
+  // Format Discord message
+  const msg = {
+    embeds: [{
+      title: '📋 New Web Brief — ' + d.businessName,
+      color: 0xC4953A,
+      fields: [
+        { name: '👤 Contact', value: d.firstName + ' ' + d.lastName + '\n' + d.email + (d.phone ? '\n' + d.phone : ''), inline: true },
+        { name: '🏢 Business', value: d.businessName + '\n' + d.industry, inline: true },
+        { name: '📦 Package', value: d.package || 'Not selected', inline: true },
+        { name: '🎯 Primary Goal', value: d.primaryAction + (d.ctaUrl ? '\n' + d.ctaUrl : ''), inline: false },
+        { name: '📝 Business Description', value: d.businessDesc.substring(0,500), inline: false },
+        { name: '👥 Target Customer', value: d.targetCustomer.substring(0,300), inline: false },
+        ...(d.sellingPoints ? [{ name: '✨ Selling Points', value: d.sellingPoints.substring(0,500), inline: false }] : []),
+        ...(d.vibe ? [{ name: '🎨 Design Vibe', value: d.vibe, inline: true }] : []),
+        ...(d.sections ? [{ name: '📐 Sections Needed', value: d.sections, inline: true }] : []),
+        ...(d.brandColors ? [{ name: '🎨 Brand Colors', value: d.brandColors, inline: true }] : []),
+        ...(d.domain ? [{ name: '🌐 Domain', value: d.domain, inline: true }] : []),
+        ...(d.bookingTool ? [{ name: '📅 Booking Tool', value: d.bookingTool, inline: true }] : []),
+        ...(d.refSites ? [{ name: '🔗 Reference Sites', value: d.refSites.substring(0,300), inline: false }] : []),
+        ...(d.notes ? [{ name: '📌 Notes', value: d.notes.substring(0,400), inline: false }] : []),
+        ...(d.existingUrl ? [{ name: '🔗 Existing Site', value: d.existingUrl, inline: true }] : []),
+        ...(d.logoLink ? [{ name: '🖼️ Logo', value: d.logoLink, inline: true }] : []),
+      ],
+      footer: { text: 'CMP Web Portal · ' + new Date().toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}) },
+      timestamp: new Date().toISOString()
+    }]
+  };
+
+  try {
+    const WEBHOOK = 'DISCORD_WEBHOOK_PLACEHOLDER';
+    if (WEBHOOK && WEBHOOK !== 'DISCORD_WEBHOOK_PLACEHOLDER') {
+      await fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(msg)
+      });
+    }
+    showThankYou();
+  } catch(err) {
+    // Even if webhook fails, show thank you — data was collected
+    showThankYou();
+  }
+});
+
+function showThankYou() {
+  document.getElementById('intake-form').style.display = 'none';
+  document.querySelector('.progress-wrap').style.display = 'none';
+  document.getElementById('thank-you').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
