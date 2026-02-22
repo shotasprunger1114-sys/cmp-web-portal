@@ -3,22 +3,26 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Web Projects Dashboard — CMP</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Mission Control — CMP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --navy: #0B1A2F;
-    --navy-light: #132240;
-    --gold: #C4953A;
+    --bg: #0A0A0A;
+    --bg2: #111111;
+    --bg3: #161616;
+    --card: #141414;
+    --border: #222222;
+    --border2: #2A2A2A;
     --red: #E02020;
+    --red-dim: rgba(224,32,32,0.12);
+    --red-glow: rgba(224,32,32,0.25);
     --white: #FFFFFF;
-    --off-white: #F8F7F4;
-    --border: #E2E0D8;
-    --text: #1A1A1A;
-    --muted: #888;
+    --muted: #666;
+    --muted2: #999;
     --success: #27AE60;
     --warning: #F39C12;
     --info: #2980B9;
+    --sidebar-w: 220px;
 
     --s-brief: #7B61FF;
     --s-building: #E02020;
@@ -26,410 +30,747 @@
     --s-revisions: #E67E22;
     --s-launching: #2980B9;
     --s-live: #27AE60;
-    --s-maintenance: #888;
+    --s-maintenance: #666;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Inter',sans-serif; background:var(--off-white); color:var(--text); min-height:100vh; }
+  html { scroll-behavior:smooth; }
+  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--white); min-height:100vh; }
 
-  /* NAV */
-  nav {
-    background:var(--navy);
-    padding:16px 32px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    position:sticky; top:0; z-index:100;
-    box-shadow:0 2px 12px rgba(0,0,0,0.3);
+  /* ─── LOGIN SCREEN ─── */
+  #login-screen {
+    position:fixed; inset:0; z-index:9999;
+    background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
   }
-  .nav-brand { color:var(--white); font-size:15px; font-weight:700; }
-  .nav-brand span { color:var(--gold); }
-  .nav-right { display:flex; gap:12px; align-items:center; }
-  .nav-tag { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:500; }
-  .nav-btn {
-    background:var(--gold); color:var(--white);
-    padding:8px 18px; border-radius:6px;
-    font-size:13px; font-weight:600;
-    text-decoration:none; border:none; cursor:pointer;
-    font-family:'Inter',sans-serif;
-    transition:background 0.2s;
+  .login-card {
+    background:var(--card);
+    border:1px solid var(--border2);
+    border-radius:20px;
+    padding:48px 40px;
+    width:100%; max-width:400px;
+    text-align:center;
   }
-  .nav-btn:hover { background:#D4A84A; }
-  .nav-btn.secondary {
-    background:transparent;
-    border:1px solid rgba(255,255,255,0.3);
-    color:rgba(255,255,255,0.8);
+  .login-logo {
+    font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+    color:var(--muted2); margin-bottom:8px;
   }
-  .nav-btn.secondary:hover { background:rgba(255,255,255,0.1); }
+  .login-logo span { color:var(--red); }
+  .login-title { font-size:26px; font-weight:800; color:var(--white); margin-bottom:8px; }
+  .login-sub { font-size:14px; color:var(--muted2); margin-bottom:32px; }
+  .login-input {
+    width:100%; padding:14px 18px;
+    border:2px solid var(--border2);
+    border-radius:10px;
+    font-family:'Inter',sans-serif; font-size:16px;
+    color:var(--white); background:#1A1A1A;
+    outline:none; letter-spacing:3px;
+    text-align:center; margin-bottom:16px;
+    transition:border-color 0.2s;
+  }
+  .login-input:focus { border-color:var(--red); }
+  .login-btn {
+    width:100%; padding:14px;
+    background:var(--red); color:var(--white);
+    border:none; border-radius:10px;
+    font-size:15px; font-weight:700;
+    cursor:pointer; font-family:'Inter',sans-serif;
+    transition:all 0.2s;
+  }
+  .login-btn:hover { background:#c01818; }
+  .login-error { font-size:13px; color:var(--red); margin-top:12px; display:none; }
+  .login-error.show { display:block; }
 
-  /* MAIN */
-  main { max-width:1400px; margin:0 auto; padding:32px 24px; }
+  /* ─── APP SHELL ─── */
+  #app { display:none; min-height:100vh; }
+  #app.visible { display:flex; }
 
-  /* SUMMARY CARDS */
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    width:var(--sidebar-w);
+    background:#0D0D0D;
+    border-right:1px solid var(--border);
+    display:flex; flex-direction:column;
+    position:fixed; top:0; left:0; bottom:0;
+    z-index:200; overflow-y:auto;
+  }
+  .sidebar-brand {
+    padding:24px 20px 20px;
+    border-bottom:1px solid var(--border);
+  }
+  .sidebar-brand-label { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .sidebar-brand-name { font-size:15px; font-weight:800; color:var(--white); line-height:1.2; }
+  .sidebar-brand-name span { color:var(--red); }
+  .sidebar-brand-tag { font-size:11px; color:var(--muted); margin-top:4px; }
+
+  .sidebar-nav { flex:1; padding:16px 0; }
+  .nav-section-label {
+    font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    color:var(--muted); padding:8px 20px 6px; margin-top:8px;
+  }
+  .nav-item {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 20px; color:var(--muted2); font-size:13px; font-weight:500;
+    cursor:pointer; transition:all 0.15s; text-decoration:none;
+    border-left:3px solid transparent;
+  }
+  .nav-item:hover { color:var(--white); background:rgba(255,255,255,0.04); }
+  .nav-item.active { color:var(--white); background:var(--red-dim); border-left-color:var(--red); }
+  .nav-item .nav-icon { font-size:16px; width:20px; text-align:center; flex-shrink:0; }
+
+  .sidebar-footer {
+    padding:16px 20px;
+    border-top:1px solid var(--border);
+  }
+  .sidebar-footer-link {
+    display:block; color:var(--muted); font-size:12px; text-decoration:none;
+    padding:6px 0; transition:color 0.2s;
+  }
+  .sidebar-footer-link:hover { color:var(--white); }
+
+  /* ─── TOPBAR ─── */
+  .topbar {
+    position:fixed; top:0; left:var(--sidebar-w); right:0;
+    height:60px; background:#0D0D0D; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 32px; z-index:100;
+  }
+  .topbar-left { display:flex; align-items:center; gap:12px; }
+  .topbar-title { font-size:16px; font-weight:700; color:var(--white); }
+  .topbar-section { font-size:14px; color:var(--muted2); }
+  .topbar-sep { color:var(--border2); }
+  .topbar-right { display:flex; align-items:center; gap:12px; }
+  .topbar-time { font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .logout-btn {
+    background:transparent; border:1px solid var(--border2); color:var(--muted2);
+    padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600;
+    cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s;
+  }
+  .logout-btn:hover { border-color:var(--red); color:var(--red); }
+
+  /* ─── MAIN CONTENT ─── */
+  .main-content {
+    margin-left:var(--sidebar-w);
+    margin-top:60px;
+    padding:32px;
+    min-height:calc(100vh - 60px);
+    flex:1;
+  }
+
+  /* ─── SECTION ─── */
+  .section { display:none; }
+  .section.active { display:block; }
+
+  .section-header {
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:28px;
+  }
+  .section-header h1 { font-size:24px; font-weight:800; color:var(--white); }
+  .section-header .section-icon { font-size:28px; }
+
+  /* ─── CARDS ─── */
+  .card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:28px;
+    margin-bottom:20px;
+  }
+  .card-title {
+    font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    color:var(--red); margin-bottom:20px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .card-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ─── REVENUE TRACKER ─── */
+  .revenue-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:16px;
+    margin-bottom:24px;
+  }
+  @media(max-width:900px) { .revenue-grid { grid-template-columns:1fr 1fr; } }
+  @media(max-width:600px) { .revenue-grid { grid-template-columns:1fr; } }
+
+  .rev-stat {
+    background:var(--bg3); border:1px solid var(--border2);
+    border-radius:12px; padding:20px 22px;
+  }
+  .rev-stat-label { font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+  .rev-stat-value { font-size:36px; font-weight:800; color:var(--white); line-height:1; margin-bottom:4px; }
+  .rev-stat-sub { font-size:13px; color:var(--muted2); }
+  .rev-stat.highlight .rev-stat-value { color:var(--red); }
+
+  .progress-section { margin-bottom:8px; }
+  .progress-label-row {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:10px;
+  }
+  .progress-label-left { font-size:14px; font-weight:600; color:var(--white); }
+  .progress-label-right { font-size:14px; font-weight:700; color:var(--red); }
+  .progress-bar-track {
+    width:100%; height:10px;
+    background:var(--bg3); border-radius:10px; overflow:hidden;
+  }
+  .progress-bar-fill {
+    height:100%; border-radius:10px;
+    background:linear-gradient(90deg, var(--red), #ff4444);
+    transition:width 1s ease;
+    box-shadow:0 0 12px var(--red-glow);
+  }
+  .progress-sub {
+    font-size:13px; color:var(--muted); margin-top:10px;
+    display:flex; gap:20px; flex-wrap:wrap;
+  }
+  .progress-sub span { display:flex; align-items:center; gap:6px; }
+
+  .clients-row {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:12px; margin-top:20px;
+  }
+  .client-pill {
+    background:var(--bg3); border:1px solid var(--border2);
+    border-radius:10px; padding:14px 18px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .client-pill-icon { font-size:20px; }
+  .client-pill-text {}
+  .client-pill-count { font-size:22px; font-weight:800; color:var(--white); line-height:1; }
+  .client-pill-label { font-size:12px; color:var(--muted); margin-top:2px; }
+
+  /* ─── PIPELINE / KANBAN ─── */
+  .kanban-board {
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:16px;
+    overflow-x:auto;
+  }
+  @media(max-width:900px) { .kanban-board { grid-template-columns:repeat(2, 1fr); } }
+  @media(max-width:600px) { .kanban-board { grid-template-columns:1fr; } }
+
+  .kanban-col {
+    background:var(--bg3); border:1px solid var(--border2);
+    border-radius:12px; overflow:hidden; min-width:180px;
+  }
+  .kanban-col-header {
+    padding:14px 16px 12px;
+    border-bottom:1px solid var(--border2);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .kanban-col-title {
+    font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+    color:var(--white);
+  }
+  .kanban-count {
+    background:var(--border2); color:var(--muted2);
+    font-size:11px; font-weight:700;
+    padding:2px 8px; border-radius:10px;
+  }
+  .kanban-col.col-new .kanban-col-header { border-top:3px solid #7B61FF; }
+  .kanban-col.col-filmed .kanban-col-header { border-top:3px solid var(--warning); }
+  .kanban-col.col-edit .kanban-col-header { border-top:3px solid var(--info); }
+  .kanban-col.col-posted .kanban-col-header { border-top:3px solid var(--success); }
+  .kanban-items { padding:12px 10px; display:flex; flex-direction:column; gap:8px; min-height:80px; }
+  .kanban-item {
+    background:var(--card); border:1px solid var(--border2);
+    border-radius:8px; padding:10px 12px;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .kanban-item:hover { border-color:var(--red); background:#1A1A1A; }
+  .kanban-item-title { font-size:13px; font-weight:600; color:var(--white); line-height:1.3; margin-bottom:4px; }
+  .kanban-item-meta { font-size:11px; color:var(--muted); }
+  .kanban-empty { font-size:12px; color:var(--muted); text-align:center; padding:20px 0; }
+
+  /* SCRIPT DETAIL TOOLTIP */
+  .script-modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.7);
+    z-index:500; display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .script-modal-overlay.open { display:flex; }
+  .script-modal {
+    background:var(--card); border:1px solid var(--border2);
+    border-radius:16px; max-width:520px; width:100%;
+    max-height:80vh; overflow-y:auto;
+    box-shadow:0 32px 80px rgba(0,0,0,0.6);
+  }
+  .script-modal-header {
+    padding:20px 24px 16px;
+    border-bottom:1px solid var(--border2);
+    display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+  }
+  .script-modal-title { font-size:17px; font-weight:700; color:var(--white); line-height:1.3; }
+  .script-modal-close {
+    background:var(--bg3); border:none; width:32px; height:32px;
+    border-radius:50%; cursor:pointer; color:var(--muted); font-size:16px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition:all 0.2s;
+  }
+  .script-modal-close:hover { color:var(--white); background:var(--border2); }
+  .script-modal-body { padding:20px 24px; }
+  .script-field { margin-bottom:16px; }
+  .script-field-label { font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+  .script-field-value { font-size:14px; color:var(--white); line-height:1.6; }
+  .script-status-pill {
+    display:inline-block; padding:4px 12px; border-radius:20px;
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;
+  }
+  .pill-New { background:rgba(123,97,255,0.2); color:#7B61FF; }
+  .pill-Filmed { background:rgba(243,156,18,0.2); color:var(--warning); }
+  .pill-In\ Edit, .pill-Edit { background:rgba(41,128,185,0.2); color:var(--info); }
+  .pill-Posted { background:rgba(39,174,96,0.2); color:var(--success); }
+
+  /* ─── AGENT STATUS ─── */
+  .agent-list { display:flex; flex-direction:column; gap:10px; }
+  .agent-row {
+    background:var(--bg3); border:1px solid var(--border2);
+    border-radius:10px; padding:16px 20px;
+    display:flex; align-items:center; gap:16px;
+  }
+  .agent-dot {
+    width:10px; height:10px; border-radius:50%; flex-shrink:0;
+  }
+  .agent-dot.ok { background:var(--success); box-shadow:0 0 6px var(--success); }
+  .agent-dot.warning { background:var(--warning); box-shadow:0 0 6px var(--warning); }
+  .agent-dot.error { background:var(--red); box-shadow:0 0 6px var(--red); }
+  .agent-dot.idle { background:var(--muted); }
+  .agent-name { flex:1; font-size:14px; font-weight:600; color:var(--white); }
+  .agent-time { font-size:13px; color:var(--muted); min-width:100px; text-align:right; }
+  .agent-status-label {
+    font-size:11px; font-weight:700; padding:3px 10px; border-radius:10px;
+    text-transform:uppercase; letter-spacing:0.5px;
+  }
+  .label-ok { background:rgba(39,174,96,0.15); color:var(--success); }
+  .label-warning { background:rgba(243,156,18,0.15); color:var(--warning); }
+  .label-error { background:rgba(224,32,32,0.15); color:var(--red); }
+  .label-idle { background:rgba(100,100,100,0.15); color:var(--muted2); }
+
+  /* ─── WEB PROJECTS (preserved + dark styled) ─── */
   .summary-row {
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-    gap:16px;
-    margin-bottom:32px;
+    grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+    gap:14px;
+    margin-bottom:24px;
   }
   .sum-card {
-    background:var(--white);
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:20px 20px 16px;
-    text-align:center;
+    background:var(--bg3); border:1px solid var(--border2);
+    border-radius:10px; padding:18px; text-align:center;
   }
-  .sum-num {
-    font-size:40px;
-    font-weight:700;
-    color:var(--navy);
-    line-height:1;
-    margin-bottom:6px;
-  }
-  .sum-label {
-    font-size:11px;
-    font-weight:600;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    color:var(--muted);
-  }
-  .sum-card.highlight { background:var(--navy); }
-  .sum-card.highlight .sum-num { color:var(--gold); }
-  .sum-card.highlight .sum-label { color:rgba(255,255,255,0.6); }
+  .sum-num { font-size:36px; font-weight:800; color:var(--white); line-height:1; margin-bottom:5px; }
+  .sum-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); }
+  .sum-card.highlight { background:var(--red-dim); border-color:rgba(224,32,32,0.3); }
+  .sum-card.highlight .sum-num { color:var(--red); }
 
-  /* FILTER */
   .filter-row {
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-bottom:24px;
-    align-items:center;
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; align-items:center;
   }
-  .filter-row h2 {
-    font-size:20px;
-    font-weight:700;
-    color:var(--navy);
-    margin-right:8px;
-  }
+  .filter-row h2 { font-size:18px; font-weight:700; color:var(--white); margin-right:4px; }
   .filter-btn {
-    padding:6px 16px;
-    border-radius:20px;
-    border:1.5px solid var(--border);
-    background:var(--white);
-    font-size:13px;
-    font-weight:500;
-    cursor:pointer;
-    font-family:'Inter',sans-serif;
-    transition:all 0.2s;
-    color:var(--text);
+    padding:6px 16px; border-radius:20px;
+    border:1.5px solid var(--border2);
+    background:transparent; font-size:12px; font-weight:600;
+    cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s;
+    color:var(--muted2);
   }
-  .filter-btn:hover { border-color:var(--navy); }
-  .filter-btn.active { background:var(--navy); color:var(--white); border-color:var(--navy); }
-
-  /* SEARCH */
-  .search-wrap {
-    margin-left:auto;
-  }
+  .filter-btn:hover { border-color:var(--white); color:var(--white); }
+  .filter-btn.active { background:var(--red); color:var(--white); border-color:var(--red); }
+  .search-wrap { margin-left:auto; }
   .search-wrap input {
-    padding:8px 16px;
-    border:1.5px solid var(--border);
-    border-radius:8px;
-    font-family:'Inter',sans-serif;
-    font-size:14px;
-    outline:none;
-    width:200px;
-    background:var(--white);
+    padding:8px 16px; border:1.5px solid var(--border2);
+    border-radius:8px; font-family:'Inter',sans-serif; font-size:13px;
+    outline:none; width:180px; background:#1A1A1A; color:var(--white);
   }
-  .search-wrap input:focus { border-color:var(--navy); }
+  .search-wrap input:focus { border-color:var(--red); }
 
-  /* PROJECT GRID */
   .projects-grid {
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
-    gap:20px;
+    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+    gap:16px;
   }
 
-  /* PROJECT CARD */
   .project-card {
-    background:var(--white);
-    border:1px solid var(--border);
-    border-radius:12px;
-    overflow:hidden;
-    cursor:pointer;
-    transition:all 0.2s;
+    background:var(--bg3); border:1px solid var(--border2);
+    border-radius:12px; overflow:hidden;
+    cursor:pointer; transition:all 0.2s;
   }
-  .project-card:hover { box-shadow:0 8px 32px rgba(0,0,0,0.1); transform:translateY(-2px); border-color:var(--gold); }
-  .card-header { padding:18px 20px 0; display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
-  .card-client { flex:1; }
-  .card-biz { font-size:17px; font-weight:700; color:var(--navy); margin-bottom:3px; line-height:1.2; }
-  .card-contact { font-size:13px; color:var(--muted); }
+  .project-card:hover { box-shadow:0 8px 32px rgba(224,32,32,0.15); transform:translateY(-2px); border-color:var(--red); }
+  .card-header { padding:16px 18px 0; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .card-biz { font-size:16px; font-weight:700; color:var(--white); margin-bottom:3px; line-height:1.2; }
+  .card-contact { font-size:12px; color:var(--muted); }
   .status-badge {
-    padding:4px 12px;
-    border-radius:20px;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:0.5px;
-    text-transform:uppercase;
-    flex-shrink:0;
-    white-space:nowrap;
+    padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700;
+    letter-spacing:0.5px; text-transform:uppercase; flex-shrink:0; white-space:nowrap;
   }
-  .badge-brief      { background:rgba(123,97,255,0.12); color:var(--s-brief); }
-  .badge-building   { background:rgba(224,32,32,0.1);   color:var(--s-building); }
-  .badge-review     { background:rgba(243,156,18,0.12); color:var(--s-review); }
-  .badge-revisions  { background:rgba(230,126,34,0.12); color:var(--s-revisions); }
-  .badge-launching  { background:rgba(41,128,185,0.1);  color:var(--s-launching); }
-  .badge-live       { background:rgba(39,174,96,0.1);   color:var(--s-live); }
-  .badge-maintenance{ background:rgba(136,136,136,0.1); color:var(--s-maintenance); }
+  .badge-brief      { background:rgba(123,97,255,0.2);   color:#7B61FF; }
+  .badge-building   { background:rgba(224,32,32,0.15);   color:var(--red); }
+  .badge-review     { background:rgba(243,156,18,0.15);  color:var(--warning); }
+  .badge-revisions  { background:rgba(230,126,34,0.15);  color:#E67E22; }
+  .badge-launching  { background:rgba(41,128,185,0.15);  color:var(--info); }
+  .badge-live       { background:rgba(39,174,96,0.15);   color:var(--success); }
+  .badge-maintenance{ background:rgba(100,100,100,0.15); color:var(--muted2); }
 
-  .card-body { padding:14px 20px; }
-  .card-meta { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
-  .meta-tag {
-    display:flex; align-items:center; gap:5px;
-    font-size:12px; color:var(--muted); font-weight:500;
-  }
-  .meta-tag .dot { width:6px; height:6px; border-radius:50%; background:var(--border); flex-shrink:0; }
-
-  /* PIPELINE BAR */
-  .pipeline-bar {
-    display:flex;
-    gap:3px;
-    margin-bottom:12px;
-  }
-  .pipeline-seg {
-    flex:1;
-    height:4px;
-    border-radius:2px;
-    background:var(--border);
-    transition:background 0.3s;
-  }
+  .card-body { padding:12px 18px; }
+  .card-meta { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .meta-tag { font-size:11px; color:var(--muted); font-weight:500; display:flex; align-items:center; gap:4px; }
+  .meta-tag .dot { width:4px; height:4px; border-radius:50%; background:var(--border2); flex-shrink:0; }
+  .pipeline-bar { display:flex; gap:2px; margin-bottom:10px; }
+  .pipeline-seg { flex:1; height:3px; border-radius:2px; background:var(--border2); }
   .pipeline-seg.done { background:var(--success); }
-  .pipeline-seg.active { background:var(--gold); }
-
-  .card-note {
-    font-size:13px;
-    color:var(--muted);
-    line-height:1.5;
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
-  }
-
-  .card-footer {
-    padding:12px 20px;
-    border-top:1px solid var(--border);
-    display:flex;
-    gap:10px;
-    align-items:center;
-  }
+  .pipeline-seg.active { background:var(--red); }
+  .card-note { font-size:12px; color:var(--muted); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .card-footer { padding:10px 18px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:center; }
   .card-link {
-    font-size:13px;
-    font-weight:600;
-    color:var(--navy);
-    text-decoration:none;
-    padding:6px 14px;
-    background:var(--off-white);
-    border-radius:6px;
-    border:1px solid var(--border);
-    transition:all 0.2s;
-    white-space:nowrap;
+    font-size:12px; font-weight:600; color:var(--muted2); text-decoration:none;
+    padding:5px 12px; background:var(--border); border-radius:6px;
+    border:1px solid var(--border2); transition:all 0.2s; white-space:nowrap;
   }
-  .card-link:hover { background:var(--navy); color:var(--white); border-color:var(--navy); }
-  .card-price {
-    margin-left:auto;
-    font-size:15px;
-    font-weight:700;
-    color:var(--navy);
+  .card-link:hover { background:var(--red); color:var(--white); border-color:var(--red); }
+  .card-price { margin-left:auto; font-size:14px; font-weight:700; color:var(--white); }
+  .archive-btn {
+    background:transparent; border:1px solid var(--border2); color:var(--muted);
+    font-size:11px; font-weight:600; padding:4px 10px; border-radius:6px;
+    cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s; flex-shrink:0;
   }
+  .archive-btn:hover { border-color:var(--red); color:var(--red); }
 
-  /* EMPTY STATE */
-  .empty-state {
-    grid-column:1/-1;
-    text-align:center;
-    padding:80px 24px;
-    color:var(--muted);
-  }
-  .empty-state .icon { font-size:48px; margin-bottom:16px; }
-  .empty-state h3 { font-size:18px; font-weight:600; color:var(--text); margin-bottom:8px; }
-
-  /* MODAL */
+  /* ─── MODAL ─── */
   .modal-overlay {
-    position:fixed; inset:0;
-    background:rgba(0,0,0,0.5);
-    z-index:500;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
+    position:fixed; inset:0; background:rgba(0,0,0,0.7);
+    z-index:500; display:none; align-items:center; justify-content:center; padding:20px;
   }
   .modal-overlay.open { display:flex; }
   .modal {
-    background:var(--white);
-    border-radius:16px;
-    max-width:700px;
-    width:100%;
-    max-height:90vh;
-    overflow-y:auto;
-    box-shadow:0 32px 80px rgba(0,0,0,0.3);
+    background:var(--card); border:1px solid var(--border2);
+    border-radius:16px; max-width:680px; width:100%;
+    max-height:90vh; overflow-y:auto;
+    box-shadow:0 32px 80px rgba(0,0,0,0.5);
   }
   .modal-header {
-    padding:24px 28px 20px;
-    border-bottom:1px solid var(--border);
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:16px;
-    position:sticky; top:0;
-    background:var(--white);
-    z-index:1;
+    padding:22px 26px 18px; border-bottom:1px solid var(--border);
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    position:sticky; top:0; background:var(--card); z-index:1;
   }
-  .modal-header-left h2 { font-size:22px; font-weight:700; color:var(--navy); margin-bottom:4px; }
-  .modal-header-left p { font-size:14px; color:var(--muted); }
+  .modal-header h2 { font-size:20px; font-weight:700; color:var(--white); margin-bottom:3px; }
+  .modal-header p { font-size:13px; color:var(--muted); }
   .modal-close {
-    background:var(--off-white); border:none; width:36px; height:36px;
-    border-radius:50%; cursor:pointer; font-size:18px; color:var(--muted);
+    background:var(--bg3); border:none; width:34px; height:34px;
+    border-radius:50%; cursor:pointer; font-size:16px; color:var(--muted);
     flex-shrink:0; display:flex; align-items:center; justify-content:center;
     transition:all 0.2s;
   }
-  .modal-close:hover { background:var(--border); color:var(--text); }
-  .modal-body { padding:24px 28px; }
-
-  .modal-section { margin-bottom:28px; }
-  .modal-section-title {
-    font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
-    color:var(--gold); margin-bottom:14px;
-  }
-  .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .detail-item {}
-  .detail-label { font-size:12px; color:var(--muted); font-weight:500; margin-bottom:3px; }
-  .detail-value { font-size:14px; font-weight:600; color:var(--text); word-break:break-all; }
-  .detail-value a { color:var(--navy); }
-  .detail-value.full { grid-column:1/-1; }
-
-  /* MILESTONES */
-  .milestone-list { display:flex; flex-direction:column; gap:8px; }
+  .modal-close:hover { color:var(--white); background:var(--border2); }
+  .modal-body { padding:22px 26px; }
+  .modal-section { margin-bottom:24px; }
+  .modal-section-title { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--red); margin-bottom:12px; }
+  .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .detail-label { font-size:11px; color:var(--muted); font-weight:500; margin-bottom:3px; }
+  .detail-value { font-size:13px; font-weight:600; color:var(--white); word-break:break-all; }
+  .detail-value a { color:var(--red); }
+  .milestone-list { display:flex; flex-direction:column; gap:6px; }
   .milestone-item {
-    display:flex; align-items:center; gap:12px;
-    padding:10px 14px;
-    background:var(--off-white);
-    border-radius:8px;
-    font-size:14px;
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; background:var(--bg3); border-radius:8px; font-size:13px;
   }
   .milestone-check {
-    width:22px; height:22px; border-radius:50%;
-    border:2px solid var(--border);
-    display:flex; align-items:center; justify-content:center;
-    flex-shrink:0; font-size:12px;
+    width:20px; height:20px; border-radius:50%; border:2px solid var(--border2);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:11px;
   }
-  .milestone-item.done .milestone-check { background:var(--success); border-color:var(--success); color:var(--white); }
-  .milestone-label { flex:1; font-weight:500; }
-  .milestone-date { font-size:12px; color:var(--muted); }
-
-  /* MODAL FOOTER */
-  .modal-footer {
-    padding:20px 28px;
-    border-top:1px solid var(--border);
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-  }
+  .milestone-item.done .milestone-check { background:var(--success); border-color:var(--success); color:#fff; }
+  .milestone-label { flex:1; font-weight:500; color:var(--white); }
+  .milestone-date { font-size:11px; color:var(--muted); }
+  .modal-footer { padding:18px 26px; border-top:1px solid var(--border); display:flex; gap:10px; flex-wrap:wrap; }
   .modal-action {
-    padding:10px 20px; border-radius:8px;
-    font-size:14px; font-weight:600;
-    border:1.5px solid var(--border);
-    cursor:pointer; font-family:'Inter',sans-serif;
-    text-decoration:none; display:inline-block;
-    color:var(--text); background:var(--white);
-    transition:all 0.2s;
+    padding:9px 18px; border-radius:8px; font-size:13px; font-weight:600;
+    border:1.5px solid var(--border2); cursor:pointer; font-family:'Inter',sans-serif;
+    text-decoration:none; color:var(--muted2); background:transparent; transition:all 0.2s;
   }
-  .modal-action:hover { background:var(--navy); color:var(--white); border-color:var(--navy); }
-  .modal-action.primary { background:var(--navy); color:var(--white); border-color:var(--navy); }
-  .modal-action.gold { background:var(--gold); color:var(--white); border-color:var(--gold); }
+  .modal-action:hover { background:var(--white); color:var(--bg); border-color:var(--white); }
+  .modal-action.primary { background:var(--bg3); color:var(--white); }
+  .modal-action.red { background:var(--red); color:var(--white); border-color:var(--red); }
 
-  /* ADD PROJECT PANEL */
+  .show-archived-row { margin-top:16px; display:flex; align-items:center; gap:10px; }
+  .show-archived-btn {
+    background:transparent; border:1px solid var(--border2); color:var(--muted);
+    font-size:12px; font-weight:600; padding:6px 14px; border-radius:6px;
+    cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s;
+  }
+  .show-archived-btn:hover { border-color:var(--white); color:var(--white); }
+  .archived-count { font-size:12px; color:var(--muted); }
+
+  /* ADD PROJECT MODAL */
   .add-json-panel {
-    background:#1e1e1e; color:#d4d4d4;
-    border-radius:8px; padding:20px;
-    font-family:monospace; font-size:13px;
-    line-height:1.6;
-    max-height:300px; overflow-y:auto;
-    margin-top:16px;
-    white-space:pre-wrap;
-    word-break:break-all;
+    background:#0d0d0d; color:#a0a0a0;
+    border-radius:8px; padding:16px;
+    font-family:monospace; font-size:12px; line-height:1.6;
+    max-height:280px; overflow-y:auto;
+    margin-top:14px; white-space:pre-wrap; word-break:break-all;
+    border:1px solid var(--border2);
   }
   .copy-btn {
-    background:var(--navy); color:var(--white);
-    border:none; border-radius:6px;
-    padding:8px 16px; font-size:13px; font-weight:600;
-    cursor:pointer; font-family:'Inter',sans-serif;
-    transition:background 0.2s; margin-top:10px;
+    background:var(--bg3); color:var(--white); border:1px solid var(--border2);
+    border-radius:6px; padding:7px 14px; font-size:12px; font-weight:600;
+    cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.2s; margin-top:8px;
   }
-  .copy-btn:hover { background:#132240; }
-  .copy-btn.copied { background:var(--success); }
+  .copy-btn:hover { background:var(--red); border-color:var(--red); }
+  .copy-btn.copied { background:var(--success); border-color:var(--success); }
 
-  @media(max-width:640px) {
-    nav { padding:14px 16px; }
-    main { padding:20px 16px; }
+  .empty-state { grid-column:1/-1; text-align:center; padding:60px 24px; color:var(--muted); }
+  .empty-state .icon { font-size:40px; margin-bottom:12px; }
+  .empty-state h3 { font-size:16px; font-weight:600; color:var(--white); margin-bottom:6px; }
+
+  /* ─── MOBILE ─── */
+  .hamburger { display:none; }
+
+  @media(max-width:768px) {
+    .sidebar { transform:translateX(-100%); transition:transform 0.3s; }
+    .sidebar.open { transform:translateX(0); }
+    .topbar { left:0; }
+    .main-content { margin-left:0; }
+    .hamburger {
+      display:flex; align-items:center; justify-content:center;
+      background:transparent; border:none; cursor:pointer;
+      color:var(--white); font-size:20px; padding:4px; margin-right:8px;
+    }
+    .kanban-board { grid-template-columns:1fr; }
+    .revenue-grid { grid-template-columns:1fr; }
+    .clients-row { grid-template-columns:1fr; }
     .detail-grid { grid-template-columns:1fr; }
-    .modal { border-radius:12px; }
-    .modal-body, .modal-header, .modal-footer { padding-left:20px; padding-right:20px; }
-    .projects-grid { grid-template-columns:1fr; }
   }
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-brand">Create More <span>Productions</span> — Web Dashboard</div>
-  <div class="nav-right">
-    <span class="nav-tag">Internal</span>
-    <a href="index.html" target="_blank" class="nav-btn secondary">Client Form ↗</a>
-    <button class="nav-btn" onclick="openAddModal()">+ Add Project</button>
+<!-- ─── LOGIN SCREEN ─── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Create More <span>Productions</span></div>
+    <h1 class="login-title">Mission Control</h1>
+    <p class="login-sub">Enter your access code to continue</p>
+    <input type="password" class="login-input" id="login-input" placeholder="••••••••" autocomplete="current-password"/>
+    <button class="login-btn" onclick="attemptLogin()">Access Dashboard →</button>
+    <div class="login-error" id="login-error">Incorrect password. Try again.</div>
   </div>
-</nav>
+</div>
 
-<main>
+<!-- ─── APP ─── -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-label">Create More <span style="color:var(--red)">Productions</span></div>
+      <div class="sidebar-brand-name">Mission <span>Control</span></div>
+      <div class="sidebar-brand-tag">CMP Internal Dashboard</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <a class="nav-item active" onclick="showSection('revenue',this)">
+        <span class="nav-icon">💰</span> Revenue
+      </a>
+      <a class="nav-item" onclick="showSection('pipeline',this)">
+        <span class="nav-icon">🎬</span> Content Pipeline
+      </a>
+      <a class="nav-item" onclick="showSection('agents',this)">
+        <span class="nav-icon">🤖</span> Agent Status
+      </a>
+      <a class="nav-item" onclick="showSection('projects',this)">
+        <span class="nav-icon">🌐</span> Web Projects
+      </a>
+      <div class="nav-section-label" style="margin-top:16px">Tools</div>
+      <a class="nav-item" href="index.html" target="_blank">
+        <span class="nav-icon">📋</span> Client Brief Form
+      </a>
+      <a class="nav-item" href="revisions.html">
+        <span class="nav-icon">🔧</span> Request Revision
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="index.html" target="_blank" class="sidebar-footer-link">↗ Client Intake Form</a>
+      <a href="revisions.html" class="sidebar-footer-link">↗ Revision Request</a>
+    </div>
+  </aside>
 
-  <!-- SUMMARY -->
-  <div class="summary-row" id="summary-row">
-    <!-- Filled by JS -->
-  </div>
-
-  <!-- FILTER + SEARCH -->
-  <div class="filter-row">
-    <h2>Projects</h2>
-    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
-    <button class="filter-btn" onclick="setFilter('brief',this)">Brief Received</button>
-    <button class="filter-btn" onclick="setFilter('building',this)">Building</button>
-    <button class="filter-btn" onclick="setFilter('review',this)">In Review</button>
-    <button class="filter-btn" onclick="setFilter('live',this)">Live</button>
-    <div class="search-wrap">
-      <input type="text" id="search-input" placeholder="Search clients..." oninput="renderProjects()"/>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <span class="topbar-title">CMP</span>
+      <span class="topbar-sep">·</span>
+      <span class="topbar-section" id="topbar-section-label">Revenue Tracker</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-time" id="topbar-time">—</span>
+      <button class="logout-btn" onclick="logout()">Lock</button>
     </div>
   </div>
 
-  <!-- PROJECTS -->
-  <div class="projects-grid" id="projects-grid">
-    <div class="empty-state"><div class="icon">⏳</div><h3>Loading projects...</h3></div>
-  </div>
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
 
-</main>
+    <!-- ══════════ REVENUE SECTION ══════════ -->
+    <div class="section active" id="section-revenue">
+      <div class="section-header">
+        <span class="section-icon">💰</span>
+        <h1>Revenue Tracker</h1>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Current MRR</div>
+        <div class="revenue-grid">
+          <div class="rev-stat highlight">
+            <div class="rev-stat-label">Monthly Recurring Revenue</div>
+            <div class="rev-stat-value">$28.5k</div>
+            <div class="rev-stat-sub">per month</div>
+          </div>
+          <div class="rev-stat">
+            <div class="rev-stat-label">Annual Run Rate</div>
+            <div class="rev-stat-value">$342k</div>
+            <div class="rev-stat-sub">current pace</div>
+          </div>
+          <div class="rev-stat">
+            <div class="rev-stat-label">Annual Target</div>
+            <div class="rev-stat-value">$1M</div>
+            <div class="rev-stat-sub">2026 goal</div>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-label-row">
+            <div class="progress-label-left">Progress to $1M ARR</div>
+            <div class="progress-label-right">34.2%</div>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="revenue-progress-bar" style="width:0%"></div>
+          </div>
+          <div class="progress-sub">
+            <span>📍 $342k of $1M</span>
+            <span>📈 $658k to go</span>
+            <span>🎯 Need ~$83.3k MRR to hit goal</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Client Breakdown</div>
+        <div class="clients-row">
+          <div class="client-pill">
+            <div class="client-pill-icon">📱</div>
+            <div class="client-pill-text">
+              <div class="client-pill-count">6</div>
+              <div class="client-pill-label">Social Clients · $4,000/mo ea.</div>
+            </div>
+          </div>
+          <div class="client-pill">
+            <div class="client-pill-icon">🔍</div>
+            <div class="client-pill-text">
+              <div class="client-pill-count">3</div>
+              <div class="client-pill-label">SEO Clients · $1,495/mo ea.</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;padding:16px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Path to $1M ARR</div>
+          <div style="font-size:14px;color:var(--white);line-height:1.8;">
+            At <strong style="color:var(--red)">$4,000/mo per social client</strong>, need <strong style="color:var(--white)">21 social clients</strong> for $84k MRR = $1M ARR<br/>
+            Currently at <strong style="color:var(--red)">6 social + 3 SEO</strong> = 9 total clients<br/>
+            Need <strong style="color:var(--white)">~15 more social clients</strong> to reach the goal
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PIPELINE SECTION ══════════ -->
+    <div class="section" id="section-pipeline">
+      <div class="section-header">
+        <span class="section-icon">🎬</span>
+        <h1>Content Pipeline</h1>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Script Status Board</div>
+        <div id="pipeline-loading" style="text-align:center;padding:40px;color:var(--muted);">Loading pipeline...</div>
+        <div class="kanban-board" id="kanban-board" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- ══════════ AGENTS SECTION ══════════ -->
+    <div class="section" id="section-agents">
+      <div class="section-header">
+        <span class="section-icon">🤖</span>
+        <h1>Agent Status</h1>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Active Automations</div>
+        <div class="agent-list" id="agent-list">
+          <div style="text-align:center;padding:30px;color:var(--muted);">Loading agent status...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PROJECTS SECTION ══════════ -->
+    <div class="section" id="section-projects">
+      <div class="section-header">
+        <span class="section-icon">🌐</span>
+        <h1>Web Projects</h1>
+      </div>
+
+      <div class="summary-row" id="summary-row">
+        <!-- JS fills this -->
+      </div>
+
+      <div class="filter-row">
+        <h2>Projects</h2>
+        <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn" onclick="setFilter('brief',this)">Brief</button>
+        <button class="filter-btn" onclick="setFilter('building',this)">Building</button>
+        <button class="filter-btn" onclick="setFilter('review',this)">In Review</button>
+        <button class="filter-btn" onclick="setFilter('live',this)">Live</button>
+        <div class="search-wrap">
+          <input type="text" id="search-input" placeholder="Search..." oninput="renderProjects()"/>
+        </div>
+      </div>
+
+      <div class="projects-grid" id="projects-grid">
+        <div class="empty-state"><div class="icon">⏳</div><h3>Loading projects...</h3></div>
+      </div>
+
+      <div class="show-archived-row">
+        <button class="show-archived-btn" id="toggle-archived" onclick="toggleArchived()">Show Archived</button>
+        <span class="archived-count" id="archived-count"></span>
+      </div>
+
+      <div style="margin-top:20px;">
+        <button class="filter-btn" style="border-color:var(--red);color:var(--red)" onclick="openAddModal()">+ Add Project</button>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app -->
+
+<!-- SCRIPT DETAIL MODAL -->
+<div class="script-modal-overlay" id="script-modal">
+  <div class="script-modal">
+    <div class="script-modal-header">
+      <div class="script-modal-title" id="script-modal-title">Script Title</div>
+      <button class="script-modal-close" onclick="closeScriptModal()">✕</button>
+    </div>
+    <div class="script-modal-body" id="script-modal-body"></div>
+  </div>
+</div>
 
 <!-- PROJECT DETAIL MODAL -->
 <div class="modal-overlay" id="detail-modal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-header-left">
-        <h2 id="modal-title">Project Name</h2>
-        <p id="modal-sub">Contact info</p>
+      <div>
+        <h2 id="modal-title">Project</h2>
+        <p id="modal-sub">Contact</p>
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-body" id="modal-body">
-      <!-- Filled by JS -->
-    </div>
-    <div class="modal-footer" id="modal-footer">
-      <!-- Filled by JS -->
-    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
   </div>
 </div>
 
@@ -437,112 +778,307 @@
 <div class="modal-overlay" id="add-modal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-header-left">
-        <h2>Add New Project</h2>
-        <p>Fill in the details — Jarvis will update projects.json</p>
-      </div>
+      <div><h2>Add New Project</h2><p>Generate JSON entry for projects.json</p></div>
       <button class="modal-close" onclick="closeAddModal()">✕</button>
     </div>
     <div class="modal-body">
-      <p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">Fill out the fields below and click "Generate Entry". Copy the JSON and paste it into #web-briefs — Jarvis will add it to projects.json and the dashboard updates automatically.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Client Name</label><input type="text" id="add-client" placeholder="Billy Johair" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Business Name</label><input type="text" id="add-biz" placeholder="Pro Realty Group" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Email</label><input type="email" id="add-email" placeholder="email@client.com" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Phone</label><input type="text" id="add-phone" placeholder="(248) 555-0100" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Industry</label><input type="text" id="add-industry" placeholder="Real Estate" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Package</label>
-          <select id="add-package" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none;background:white">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6">Fill out the fields, generate the JSON, and post it to #web-briefs — Jarvis will add it to the dashboard.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:5px;color:var(--muted)">Client Name</label><input type="text" id="add-client" placeholder="Billy Johair" style="width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:7px;font-family:Inter,sans-serif;font-size:13px;outline:none;background:#1A1A1A;color:var(--white)"/></div>
+        <div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:5px;color:var(--muted)">Business Name</label><input type="text" id="add-biz" placeholder="Pro Realty Group" style="width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:7px;font-family:Inter,sans-serif;font-size:13px;outline:none;background:#1A1A1A;color:var(--white)"/></div>
+        <div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:5px;color:var(--muted)">Email</label><input type="email" id="add-email" placeholder="email@client.com" style="width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:7px;font-family:Inter,sans-serif;font-size:13px;outline:none;background:#1A1A1A;color:var(--white)"/></div>
+        <div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:5px;color:var(--muted)">Phone</label><input type="text" id="add-phone" placeholder="(248) 555-0100" style="width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:7px;font-family:Inter,sans-serif;font-size:13px;outline:none;background:#1A1A1A;color:var(--white)"/></div>
+        <div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:5px;color:var(--muted)">Industry</label><input type="text" id="add-industry" placeholder="Real Estate" style="width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:7px;font-family:Inter,sans-serif;font-size:13px;outline:none;background:#1A1A1A;color:var(--white)"/></div>
+        <div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:5px;color:var(--muted)">Package</label>
+          <select id="add-package" style="width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:7px;font-family:Inter,sans-serif;font-size:13px;outline:none;background:#1A1A1A;color:var(--white)">
             <option value="landing">Landing Page — $2,500</option>
             <option value="multipage">Multi-Page — $4,500+</option>
             <option value="redesign">Redesign — $3,500+</option>
           </select>
         </div>
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Price ($)</label><input type="number" id="add-price" placeholder="2500" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none"/></div>
-        <div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Status</label>
-          <select id="add-status" style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none;background:white">
+        <div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:5px;color:var(--muted)">Price ($)</label><input type="number" id="add-price" placeholder="2500" style="width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:7px;font-family:Inter,sans-serif;font-size:13px;outline:none;background:#1A1A1A;color:var(--white)"/></div>
+        <div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:5px;color:var(--muted)">Status</label>
+          <select id="add-status" style="width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:7px;font-family:Inter,sans-serif;font-size:13px;outline:none;background:#1A1A1A;color:var(--white)">
             <option value="brief">Brief Received</option>
             <option value="building">Building V1</option>
             <option value="review">Client Review</option>
             <option value="revisions">Revisions</option>
             <option value="launching">Launching</option>
             <option value="live">Live</option>
-            <option value="maintenance">Maintenance</option>
           </select>
         </div>
-        <div style="grid-column:1/-1"><label style="font-size:12px;font-weight:600;display:block;margin-bottom:6px">Notes</label><textarea id="add-notes" rows="2" placeholder="Any context about the project..." style="width:100%;padding:10px 14px;border:1.5px solid #E2E0D8;border-radius:8px;font-family:Inter,sans-serif;font-size:14px;outline:none;resize:vertical"></textarea></div>
+        <div style="grid-column:1/-1"><label style="font-size:11px;font-weight:600;display:block;margin-bottom:5px;color:var(--muted)">Notes</label><textarea id="add-notes" rows="2" style="width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:7px;font-family:Inter,sans-serif;font-size:13px;outline:none;background:#1A1A1A;color:var(--white);resize:vertical"></textarea></div>
       </div>
-      <button class="nav-btn" style="margin-top:16px;width:100%;padding:12px" onclick="generateJSON()">Generate Entry →</button>
+      <button onclick="generateJSON()" style="width:100%;padding:11px;margin-top:14px;background:var(--red);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif">Generate Entry →</button>
       <div id="json-output" style="display:none">
         <div class="add-json-panel" id="json-code"></div>
         <button class="copy-btn" id="copy-btn" onclick="copyJSON()">Copy JSON</button>
-        <p style="font-size:12px;color:var(--muted);margin-top:10px">Paste this in #web-briefs and tag @Jarvis — it'll be added to the live dashboard.</p>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">Paste in #web-briefs and tag @Jarvis — it'll be added to the live dashboard.</p>
       </div>
     </div>
   </div>
 </div>
 
 <script>
+// ─── AUTH ───
+const PASS = 'cmp2026';
+const SESSION_KEY = 'cmp_mc_auth';
+
+function attemptLogin() {
+  const val = document.getElementById('login-input').value;
+  if (val === PASS) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    initApp();
+  } else {
+    document.getElementById('login-error').classList.add('show');
+    document.getElementById('login-input').value = '';
+    setTimeout(() => document.getElementById('login-error').classList.remove('show'), 3000);
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+document.getElementById('login-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') attemptLogin();
+});
+
+// Auto-login if session exists
+if (sessionStorage.getItem(SESSION_KEY)) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+  initApp();
+}
+
+// ─── SIDEBAR / MOBILE ───
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ─── CLOCK ───
+function updateClock() {
+  const now = new Date();
+  const t = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:true });
+  const d = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  document.getElementById('topbar-time').textContent = d + ' · ' + t;
+}
+updateClock();
+setInterval(updateClock, 15000);
+
+// ─── SECTION NAV ───
+const SECTION_LABELS = {
+  revenue: 'Revenue Tracker',
+  pipeline: 'Content Pipeline',
+  agents: 'Agent Status',
+  projects: 'Web Projects'
+};
+
+function showSection(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('topbar-section-label').textContent = SECTION_LABELS[id] || id;
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+
+  // Lazy loads
+  if (id === 'pipeline' && !pipelineLoaded) loadPipeline();
+  if (id === 'agents' && !agentsLoaded) loadAgents();
+  if (id === 'projects' && !projectsLoaded) loadProjects();
+}
+
+// ─── REVENUE ───
+function initRevenue() {
+  // Animate progress bar
+  setTimeout(() => {
+    document.getElementById('revenue-progress-bar').style.width = '34.2%';
+  }, 200);
+}
+
+// ─── PIPELINE ───
+let pipelineLoaded = false;
+let allScripts = [];
+
+const KANBAN_COLS = [
+  { key:'New',     label:'New',     cls:'col-new'    },
+  { key:'Filmed',  label:'Filmed',  cls:'col-filmed' },
+  { key:'In Edit', label:'In Edit', cls:'col-edit'   },
+  { key:'Posted',  label:'Posted',  cls:'col-posted' }
+];
+
+async function loadPipeline() {
+  pipelineLoaded = true;
+  try {
+    const r = await fetch('https://raw.githubusercontent.com/shotasprunger1114-sys/cmp-kanban/main/pipeline.json?t=' + Date.now());
+    const data = await r.json();
+    allScripts = data.scripts || data || [];
+    renderKanban();
+    document.getElementById('pipeline-loading').style.display = 'none';
+    document.getElementById('kanban-board').style.display = 'grid';
+  } catch(e) {
+    document.getElementById('pipeline-loading').innerHTML = `
+      <div style="color:var(--muted)">⚠️ Could not load pipeline.json from GitHub.<br/>
+      <small style="font-size:12px">Repo: shotasprunger1114-sys/cmp-kanban — ensure pipeline.json exists.</small></div>`;
+  }
+}
+
+function renderKanban() {
+  const board = document.getElementById('kanban-board');
+  board.innerHTML = KANBAN_COLS.map(col => {
+    const items = allScripts.filter(s => {
+      const st = (s.status || '').toLowerCase();
+      const colKey = col.key.toLowerCase();
+      return st === colKey || (col.key === 'In Edit' && (st === 'in edit' || st === 'edit' || st === 'in-edit'));
+    });
+    const itemsHTML = items.length
+      ? items.map((s, i) => `
+        <div class="kanban-item" onclick="openScriptModal(${allScripts.indexOf(s)})">
+          <div class="kanban-item-title">${escHtml(s.title || s.hook || 'Untitled')}</div>
+          ${s.pillar ? `<div class="kanban-item-meta">📌 ${escHtml(s.pillar)}</div>` : ''}
+        </div>
+      `).join('')
+      : `<div class="kanban-empty">—</div>`;
+
+    return `
+      <div class="kanban-col ${col.cls}">
+        <div class="kanban-col-header">
+          <div class="kanban-col-title">${col.label}</div>
+          <div class="kanban-count">${items.length}</div>
+        </div>
+        <div class="kanban-items">${itemsHTML}</div>
+      </div>`;
+  }).join('');
+}
+
+function openScriptModal(idx) {
+  const s = allScripts[idx];
+  if (!s) return;
+  document.getElementById('script-modal-title').textContent = s.title || s.hook || 'Script';
+  const statusKey = (s.status || 'New').replace(' ', '\\ ');
+  document.getElementById('script-modal-body').innerHTML = `
+    <div class="script-field">
+      <div class="script-field-label">Status</div>
+      <div class="script-field-value">
+        <span class="script-status-pill pill-${escHtml(s.status||'New')}">${escHtml(s.status||'New')}</span>
+      </div>
+    </div>
+    ${s.hook ? `<div class="script-field"><div class="script-field-label">Hook</div><div class="script-field-value">${escHtml(s.hook)}</div></div>` : ''}
+    ${s.pillar ? `<div class="script-field"><div class="script-field-label">Pillar</div><div class="script-field-value">${escHtml(s.pillar)}</div></div>` : ''}
+    ${s.platform ? `<div class="script-field"><div class="script-field-label">Platform</div><div class="script-field-value">${escHtml(s.platform)}</div></div>` : ''}
+    ${s.notes ? `<div class="script-field"><div class="script-field-label">Notes</div><div class="script-field-value">${escHtml(s.notes)}</div></div>` : ''}
+    ${s.date ? `<div class="script-field"><div class="script-field-label">Date</div><div class="script-field-value">${escHtml(s.date)}</div></div>` : ''}
+  `;
+  document.getElementById('script-modal').classList.add('open');
+}
+
+function closeScriptModal() {
+  document.getElementById('script-modal').classList.remove('open');
+}
+
+// ─── AGENTS ───
+let agentsLoaded = false;
+
+async function loadAgents() {
+  agentsLoaded = true;
+  try {
+    const r = await fetch('cron-status.json?t=' + Date.now());
+    const data = await r.json();
+    renderAgents(data.agents || {});
+  } catch(e) {
+    document.getElementById('agent-list').innerHTML = '<div style="color:var(--muted);padding:20px;text-align:center">Could not load cron-status.json</div>';
+  }
+}
+
+function timeAgo(isoStr) {
+  if (!isoStr) return 'Never';
+  const d = new Date(isoStr);
+  const diff = Math.floor((Date.now() - d) / 1000);
+  if (diff < 60) return diff + 's ago';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+
+function renderAgents(agents) {
+  const list = document.getElementById('agent-list');
+  list.innerHTML = Object.entries(agents).map(([key, agent]) => `
+    <div class="agent-row">
+      <div class="agent-dot ${agent.status}"></div>
+      <div class="agent-name">${escHtml(agent.label || key)}</div>
+      <div class="agent-time">${timeAgo(agent.lastRun)}</div>
+      <div class="agent-status-label label-${agent.status}">${agent.status}</div>
+    </div>
+  `).join('');
+}
+
+// ─── WEB PROJECTS ───
 let allProjects = [];
 let activeFilter = 'all';
 let selectedProject = null;
+let showArchived = false;
+let projectsLoaded = false;
 
 const STATUS_LABELS = {
-  brief: 'Brief Received',
-  building: 'Building V1',
-  review: 'Client Review',
-  revisions: 'Revisions',
-  launching: 'Launching',
-  live: 'Live ✓',
-  maintenance: 'Maintenance'
+  brief:'Brief Received', building:'Building V1', review:'Client Review',
+  revisions:'Revisions', launching:'Launching', live:'Live ✓', maintenance:'Maintenance'
 };
-
 const PIPELINE_STAGES = ['brief','building','review','revisions','launching','live'];
 const PKG_LABELS = { landing:'Landing Page', multipage:'Multi-Page Site', redesign:'Redesign' };
 
+function getArchivedIds() {
+  try { return new Set(JSON.parse(localStorage.getItem('cmp_archived') || '[]')); }
+  catch(e) { return new Set(); }
+}
+function saveArchivedIds(set) { localStorage.setItem('cmp_archived', JSON.stringify([...set])); }
+function archiveProject(id) { const ids=getArchivedIds(); ids.add(id); saveArchivedIds(ids); renderProjects(); renderSummary(); }
+function unarchiveProject(id) { const ids=getArchivedIds(); ids.delete(id); saveArchivedIds(ids); renderProjects(); renderSummary(); }
+function toggleArchived() {
+  showArchived = !showArchived;
+  document.getElementById('toggle-archived').textContent = showArchived ? 'Hide Archived' : 'Show Archived';
+  renderProjects();
+}
+
 function statusBadgeClass(s) {
-  const map = { brief:'brief', building:'building', review:'review', revisions:'revisions', launching:'launching', live:'live', maintenance:'maintenance' };
+  const map = {brief:'brief',building:'building',review:'review',revisions:'revisions',launching:'launching',live:'live',maintenance:'maintenance'};
   return 'badge-' + (map[s] || 'brief');
 }
 
 function pipelineIndex(status) { return PIPELINE_STAGES.indexOf(status); }
-
-function fmtDate(d) {
-  if (!d) return '—';
-  const date = new Date(d + 'T00:00:00');
-  return date.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-}
-
-function fmtPrice(p) {
-  if (!p) return '—';
-  return '$' + Number(p).toLocaleString();
-}
+function fmtDate(d) { if (!d) return '—'; return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function fmtPrice(p) { if (!p) return '—'; return '$' + Number(p).toLocaleString(); }
 
 async function loadProjects() {
+  projectsLoaded = true;
   try {
     const r = await fetch('projects.json?t=' + Date.now());
     const data = await r.json();
     allProjects = data.projects || [];
-  } catch(e) {
-    allProjects = [];
-  }
+  } catch(e) { allProjects = []; }
   renderSummary();
   renderProjects();
 }
 
 function renderSummary() {
-  const total = allProjects.length;
-  const active = allProjects.filter(p => !['live','maintenance'].includes(p.status)).length;
-  const live = allProjects.filter(p => p.status === 'live').length;
-  const review = allProjects.filter(p => p.status === 'review').length;
-  const revenue = allProjects.reduce((s,p) => s + (p.price || 0), 0);
-
+  const archived = getArchivedIds();
+  const active_p = allProjects.filter(p => !archived.has(p.id));
+  const archivedCount = allProjects.filter(p => archived.has(p.id)).length;
+  const total = active_p.length;
+  const inprog = active_p.filter(p => !['live','maintenance'].includes(p.status)).length;
+  const live = active_p.filter(p => p.status === 'live').length;
+  const review = active_p.filter(p => p.status === 'review').length;
+  const revenue = active_p.reduce((s,p) => s+(p.price||0), 0);
+  const countEl = document.getElementById('archived-count');
+  if (countEl) countEl.textContent = archivedCount > 0 ? archivedCount + ' archived' : '';
   document.getElementById('summary-row').innerHTML = `
     <div class="sum-card highlight"><div class="sum-num">${total}</div><div class="sum-label">Total Projects</div></div>
-    <div class="sum-card"><div class="sum-num">${active}</div><div class="sum-label">In Progress</div></div>
+    <div class="sum-card"><div class="sum-num">${inprog}</div><div class="sum-label">In Progress</div></div>
     <div class="sum-card"><div class="sum-num">${review}</div><div class="sum-label">Awaiting Review</div></div>
     <div class="sum-card"><div class="sum-num">${live}</div><div class="sum-label">Live Sites</div></div>
-    <div class="sum-card"><div class="sum-num" style="font-size:28px">$${(revenue/1000).toFixed(1)}k</div><div class="sum-label">Revenue</div></div>
+    <div class="sum-card"><div class="sum-num" style="font-size:26px">$${(revenue/1000).toFixed(1)}k</div><div class="sum-label">Revenue</div></div>
   `;
 }
 
@@ -554,34 +1090,32 @@ function setFilter(f, btn) {
 }
 
 function renderProjects() {
-  const search = document.getElementById('search-input').value.toLowerCase();
+  const search = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const archived = getArchivedIds();
   let filtered = allProjects;
+  if (!showArchived) filtered = filtered.filter(p => !archived.has(p.id));
   if (activeFilter !== 'all') filtered = filtered.filter(p => p.status === activeFilter);
   if (search) filtered = filtered.filter(p =>
-    p.businessName.toLowerCase().includes(search) ||
-    p.clientName.toLowerCase().includes(search) ||
-    (p.industry||'').toLowerCase().includes(search)
+    p.businessName.toLowerCase().includes(search) || p.clientName.toLowerCase().includes(search)
   );
-
   const grid = document.getElementById('projects-grid');
   if (!filtered.length) {
-    grid.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>No projects found</h3><p>Try a different filter or search.</p></div>`;
+    grid.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><h3>No projects found</h3><p>Try a different filter.</p></div>`;
     return;
   }
-
   grid.innerHTML = filtered.map(p => {
     const stageIdx = pipelineIndex(p.status);
-    const pipelineHTML = PIPELINE_STAGES.map((s, i) => {
-      const cls = i < stageIdx ? 'done' : i === stageIdx ? 'active' : '';
+    const pipe = PIPELINE_STAGES.map((s,i) => {
+      const cls = i<stageIdx?'done':i===stageIdx?'active':'';
       return `<div class="pipeline-seg ${cls}"></div>`;
     }).join('');
-
+    const isArch = archived.has(p.id);
     return `
     <div class="project-card" onclick="openModal('${p.id}')">
       <div class="card-header">
         <div class="card-client">
-          <div class="card-biz">${p.businessName}</div>
-          <div class="card-contact">${p.clientName} · ${p.industry}</div>
+          <div class="card-biz">${escHtml(p.businessName)}</div>
+          <div class="card-contact">${escHtml(p.clientName)} · ${escHtml(p.industry||'')}</div>
         </div>
         <div class="status-badge ${statusBadgeClass(p.status)}">${STATUS_LABELS[p.status]||p.status}</div>
       </div>
@@ -589,15 +1123,15 @@ function renderProjects() {
         <div class="card-meta">
           <div class="meta-tag"><div class="dot"></div>${PKG_LABELS[p.package]||p.package||'—'}</div>
           <div class="meta-tag"><div class="dot"></div>Started ${fmtDate(p.dateStarted)}</div>
-          ${p.dateLaunched ? `<div class="meta-tag"><div class="dot"></div>Launched ${fmtDate(p.dateLaunched)}</div>` : ''}
         </div>
-        <div class="pipeline-bar">${pipelineHTML}</div>
-        ${p.notes ? `<div class="card-note">${p.notes}</div>` : ''}
+        <div class="pipeline-bar">${pipe}</div>
+        ${p.notes ? `<div class="card-note">${escHtml(p.notes)}</div>` : ''}
       </div>
       <div class="card-footer">
         ${p.previewUrl ? `<a href="${p.previewUrl}" target="_blank" class="card-link" onclick="event.stopPropagation()">View Live ↗</a>` : ''}
         ${p.repoUrl ? `<a href="${p.repoUrl}" target="_blank" class="card-link" onclick="event.stopPropagation()">Repo ↗</a>` : ''}
         <div class="card-price">${fmtPrice(p.price)}</div>
+        <button class="archive-btn" onclick="event.stopPropagation(); ${isArch?`unarchiveProject('${p.id}')`:`archiveProject('${p.id}')`}">${isArch?'Restore':'Archive'}</button>
       </div>
     </div>`;
   }).join('');
@@ -607,136 +1141,99 @@ function openModal(id) {
   const p = allProjects.find(x => x.id === id);
   if (!p) return;
   selectedProject = p;
-
   document.getElementById('modal-title').textContent = p.businessName;
-  document.getElementById('modal-sub').textContent = p.clientName + ' · ' + p.email + (p.phone ? ' · ' + p.phone : '');
-
+  document.getElementById('modal-sub').textContent = p.clientName + ' · ' + p.email + (p.phone?' · '+p.phone:'');
   const stageIdx = pipelineIndex(p.status);
-
-  const milestonesHTML = (p.milestones || PIPELINE_STAGES.map((s,i) => ({
-    label: STATUS_LABELS[s], date: null, done: i <= stageIdx
-  }))).map(m => `
-    <div class="milestone-item ${m.done ? 'done' : ''}">
-      <div class="milestone-check">${m.done ? '✓' : ''}</div>
-      <div class="milestone-label">${m.label}</div>
-      <div class="milestone-date">${m.date ? fmtDate(m.date) : ''}</div>
-    </div>
-  `).join('');
-
+  const milestonesHTML = (p.milestones || PIPELINE_STAGES.map((s,i) => ({label:STATUS_LABELS[s],date:null,done:i<=stageIdx}))).map(m => `
+    <div class="milestone-item ${m.done?'done':''}">
+      <div class="milestone-check">${m.done?'✓':''}</div>
+      <div class="milestone-label">${escHtml(m.label)}</div>
+      <div class="milestone-date">${m.date?fmtDate(m.date):''}</div>
+    </div>`).join('');
   document.getElementById('modal-body').innerHTML = `
     <div class="modal-section">
-      <div class="modal-section-title">Project Status</div>
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-        <div class="status-badge ${statusBadgeClass(p.status)}" style="font-size:13px;padding:6px 16px">${STATUS_LABELS[p.status]||p.status}</div>
-        <div style="font-size:14px;color:var(--muted)">Started ${fmtDate(p.dateStarted)}${p.dateLaunched ? ' · Launched ' + fmtDate(p.dateLaunched) : ''}</div>
-      </div>
+      <div class="modal-section-title">Pipeline</div>
       <div class="milestone-list">${milestonesHTML}</div>
     </div>
-
     <div class="modal-section">
-      <div class="modal-section-title">Client & Project Details</div>
+      <div class="modal-section-title">Details</div>
       <div class="detail-grid">
-        <div class="detail-item"><div class="detail-label">Client</div><div class="detail-value">${p.clientName}</div></div>
-        <div class="detail-item"><div class="detail-label">Business</div><div class="detail-value">${p.businessName}</div></div>
-        <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value"><a href="mailto:${p.email}">${p.email}</a></div></div>
-        <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-value">${p.phone || '—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Industry</div><div class="detail-value">${p.industry || '—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Package</div><div class="detail-value">${PKG_LABELS[p.package]||p.package||'—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Price</div><div class="detail-value">${fmtPrice(p.price)}</div></div>
-        <div class="detail-item"><div class="detail-label">Domain</div><div class="detail-value">${p.domain || '—'}</div></div>
-        ${p.previewUrl ? `<div class="detail-item detail-value full"><div class="detail-label">Live URL</div><div class="detail-value"><a href="${p.previewUrl}" target="_blank">${p.previewUrl}</a></div></div>` : ''}
-        ${p.repoUrl ? `<div class="detail-item detail-value full"><div class="detail-label">GitHub Repo</div><div class="detail-value"><a href="${p.repoUrl}" target="_blank">${p.repoUrl}</a></div></div>` : ''}
-        ${p.notes ? `<div class="detail-item" style="grid-column:1/-1"><div class="detail-label">Notes</div><div class="detail-value" style="font-weight:400;line-height:1.6">${p.notes}</div></div>` : ''}
+        <div><div class="detail-label">Client</div><div class="detail-value">${escHtml(p.clientName)}</div></div>
+        <div><div class="detail-label">Business</div><div class="detail-value">${escHtml(p.businessName)}</div></div>
+        <div><div class="detail-label">Email</div><div class="detail-value"><a href="mailto:${p.email}">${p.email}</a></div></div>
+        <div><div class="detail-label">Phone</div><div class="detail-value">${p.phone||'—'}</div></div>
+        <div><div class="detail-label">Package</div><div class="detail-value">${PKG_LABELS[p.package]||p.package||'—'}</div></div>
+        <div><div class="detail-label">Price</div><div class="detail-value">${fmtPrice(p.price)}</div></div>
+        ${p.previewUrl?`<div style="grid-column:1/-1"><div class="detail-label">Live URL</div><div class="detail-value"><a href="${p.previewUrl}" target="_blank">${p.previewUrl}</a></div></div>`:''}
+        ${p.notes?`<div style="grid-column:1/-1"><div class="detail-label">Notes</div><div class="detail-value" style="font-weight:400;line-height:1.6">${escHtml(p.notes)}</div></div>`:''}
       </div>
-    </div>
-  `;
-
+    </div>`;
   document.getElementById('modal-footer').innerHTML = `
-    ${p.previewUrl ? `<a href="${p.previewUrl}" target="_blank" class="modal-action gold">View Live Site ↗</a>` : ''}
-    ${p.repoUrl ? `<a href="${p.repoUrl}" target="_blank" class="modal-action primary">GitHub Repo ↗</a>` : ''}
-    <a href="mailto:${p.email}" class="modal-action">Email Client</a>
-    ${p.phone ? `<a href="tel:${p.phone}" class="modal-action">Call Client</a>` : ''}
-  `;
-
+    ${p.previewUrl?`<a href="${p.previewUrl}" target="_blank" class="modal-action red">View Live ↗</a>`:''}
+    ${p.repoUrl?`<a href="${p.repoUrl}" target="_blank" class="modal-action primary">GitHub Repo ↗</a>`:''}
+    <a href="mailto:${p.email}" class="modal-action">Email Client</a>`;
   document.getElementById('detail-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
 }
 
-function closeModal() {
-  document.getElementById('detail-modal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function openAddModal() {
-  document.getElementById('add-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeAddModal() {
-  document.getElementById('add-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  document.getElementById('json-output').style.display = 'none';
-}
+function closeModal() { document.getElementById('detail-modal').classList.remove('open'); }
+function openAddModal() { document.getElementById('add-modal').classList.add('open'); }
+function closeAddModal() { document.getElementById('add-modal').classList.remove('open'); document.getElementById('json-output').style.display='none'; }
 
 function generateJSON() {
   const today = new Date().toISOString().split('T')[0];
   const biz = document.getElementById('add-biz').value.trim();
-  const slug = biz.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') + '-001';
+  const slug = biz.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')+'-001';
   const pkg = document.getElementById('add-package').value;
-  const pkgLabels = { landing:'Landing Page', multipage:'Multi-Page Site', redesign:'Redesign' };
-
   const entry = {
-    id: slug,
-    clientName: document.getElementById('add-client').value.trim(),
-    businessName: biz,
-    industry: document.getElementById('add-industry').value.trim(),
-    email: document.getElementById('add-email').value.trim(),
-    phone: document.getElementById('add-phone').value.trim(),
-    package: pkg,
-    packageLabel: pkgLabels[pkg] || pkg,
-    price: parseInt(document.getElementById('add-price').value) || 0,
-    dateSubmitted: today,
-    dateStarted: today,
-    dateLaunched: null,
-    status: document.getElementById('add-status').value,
-    previewUrl: null,
-    repoUrl: null,
-    domain: '',
-    notes: document.getElementById('add-notes').value.trim(),
-    milestones: [
-      { label:'Brief Received', date: today, done: true },
-      { label:'V1 Built', date: null, done: false },
-      { label:'Internal QC', date: null, done: false },
-      { label:'Client Review', date: null, done: false },
-      { label:'Revisions Done', date: null, done: false },
-      { label:'Launched', date: null, done: false }
+    id:slug, clientName:document.getElementById('add-client').value.trim(),
+    businessName:biz, industry:document.getElementById('add-industry').value.trim(),
+    email:document.getElementById('add-email').value.trim(), phone:document.getElementById('add-phone').value.trim(),
+    package:pkg, price:parseInt(document.getElementById('add-price').value)||0,
+    dateStarted:today, dateLaunched:null, status:document.getElementById('add-status').value,
+    previewUrl:null, repoUrl:null, domain:'', notes:document.getElementById('add-notes').value.trim(),
+    milestones:[
+      {label:'Brief Received',date:today,done:true},
+      {label:'V1 Built',date:null,done:false},
+      {label:'Client Review',date:null,done:false},
+      {label:'Revisions Done',date:null,done:false},
+      {label:'Launched',date:null,done:false}
     ]
   };
-
-  document.getElementById('json-code').textContent = JSON.stringify(entry, null, 2);
-  document.getElementById('json-output').style.display = 'block';
+  document.getElementById('json-code').textContent = JSON.stringify(entry,null,2);
+  document.getElementById('json-output').style.display='block';
 }
 
 function copyJSON() {
-  const text = document.getElementById('json-code').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copy-btn');
-    btn.textContent = 'Copied! ✓';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy JSON'; btn.classList.remove('copied'); }, 2000);
+  navigator.clipboard.writeText(document.getElementById('json-code').textContent).then(()=>{
+    const btn=document.getElementById('copy-btn');
+    btn.textContent='Copied! ✓'; btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy JSON';btn.classList.remove('copied');},2000);
   });
+}
+
+// Escape HTML
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // Close modals on overlay click
 document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) { closeModal(); closeAddModal(); } });
+  el.addEventListener('click', e => { if(e.target===el){closeModal();closeAddModal();} });
+});
+document.getElementById('script-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('script-modal')) closeScriptModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape'){closeModal();closeAddModal();closeScriptModal();}
 });
 
-// ESC to close
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeAddModal(); } });
-
-// LOAD
-loadProjects();
+// ─── INIT ───
+function initApp() {
+  initRevenue();
+  // Projects load when you switch to that tab; preload now
+  loadProjects();
+}
 </script>
 </body>
 </html>
