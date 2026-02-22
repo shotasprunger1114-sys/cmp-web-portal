@@ -42,9 +42,9 @@
       "dateStarted": "2026-02-18",
       "dateLaunched": "2026-02-20",
       "status": "live",
-      "previewUrl": "https://shotasprunger1114-sys.github.io/pro-realty-landing/",
+      "previewUrl": "https://pro-realty-cmp.netlify.app",
       "repoUrl": "https://github.com/shotasprunger1114-sys/pro-realty-landing",
-      "domain": "GitHub Pages (pending custom domain)",
+      "domain": "Netlify (pending custom domain)",
       "notes": "V3 deployed. Client happy — approved mobile fixes Feb 20. First CMP web project. PRG is the proof of concept.",
       "milestones": [
         { "label": "Brief Received", "date": "2026-02-18", "done": true },
