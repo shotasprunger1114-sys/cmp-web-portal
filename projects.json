@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-20",
+  "lastUpdated": "2026-02-21",
   "projects": [
     {
       "id": "prg-001",
@@ -26,6 +26,33 @@
         { "label": "Client Review", "date": "2026-02-20", "done": true },
         { "label": "Revisions Done", "date": "2026-02-20", "done": true },
         { "label": "Launched", "date": "2026-02-20", "done": true }
+      ]
+    },
+    {
+      "id": "apx-001",
+      "clientName": "Bassam Chahine",
+      "businessName": "APX RCM",
+      "industry": "Medical Billing / RCM",
+      "email": "bassam.chahine@onesourceprovider.com",
+      "phone": "248-686-1357",
+      "package": "multi",
+      "packageLabel": "Multi-Page Site",
+      "price": 5000,
+      "dateSubmitted": "2026-02-21",
+      "dateStarted": "2026-02-21",
+      "dateLaunched": null,
+      "status": "review",
+      "previewUrl": "https://apx-rcm-cmp.netlify.app",
+      "repoUrl": "https://github.com/shotasprunger1114-sys/apx-rcm",
+      "domain": "apxrcm.com (pending DNS)",
+      "notes": "V1 built and deployed to Netlify. Awaiting Shota QC + client review. Missing: real logo (CSS text treatment for now), Calendly link, testimonials.",
+      "milestones": [
+        { "label": "Brief Received", "date": "2026-02-21", "done": true },
+        { "label": "V1 Built", "date": "2026-02-21", "done": true },
+        { "label": "Internal QC", "date": null, "done": false },
+        { "label": "Client Review", "date": null, "done": false },
+        { "label": "Revisions Done", "date": null, "done": false },
+        { "label": "Launched", "date": null, "done": false }
       ]
     }
   ]
