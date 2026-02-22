@@ -1,6 +1,33 @@
 {
-  "lastUpdated": "2026-02-21",
+  "lastUpdated": "2026-02-22",
   "projects": [
+    {
+      "id": "cmp-001",
+      "clientName": "Shota Sprunger",
+      "businessName": "Create More Productions",
+      "industry": "Marketing Agency",
+      "email": "shota@createmoreproductions.com",
+      "phone": "",
+      "package": "multi",
+      "packageLabel": "Multi-Page Site",
+      "price": 0,
+      "dateSubmitted": "2026-02-22",
+      "dateStarted": "2026-02-22",
+      "dateLaunched": null,
+      "status": "review",
+      "previewUrl": "https://create-more-cmp.netlify.app",
+      "repoUrl": "",
+      "domain": "createmore.us",
+      "notes": "CMP's own agency website. V1 built and deployed. Awaiting Shota QC.",
+      "milestones": [
+        {"label":"Brief Received","date":"2026-02-22","done":true},
+        {"label":"V1 Built","date":"2026-02-22","done":true},
+        {"label":"Internal QC","date":null,"done":false},
+        {"label":"Client Review","date":null,"done":false},
+        {"label":"Revisions Done","date":null,"done":false},
+        {"label":"Launched","date":null,"done":false}
+      ]
+    },
     {
       "id": "prg-001",
       "clientName": "Billy Johair",
