@@ -7,12 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --navy: #0B1A2F;
-    --gold: #C4953A;
+    --navy: #0A0A0A;
+    --gold: #E02020;
     --red: #E02020;
     --white: #FFFFFF;
-    --off-white: #F8F7F4;
-    --border: #E2E0D8;
+    --off-white: #F7F7F7;
+    --border: #E2E2E2;
     --text: #1A1A1A;
     --muted: #888;
     --success: #27AE60;
@@ -43,7 +43,7 @@
 
   /* HERO STRIP */
   .hero-strip {
-    background:linear-gradient(135deg,var(--navy) 0%,#132240 100%);
+    background:linear-gradient(135deg,#111111 0%,#1A1A1A 100%);
     padding:48px 24px 40px;
     text-align:center;
     border-bottom:3px solid var(--gold);
@@ -67,8 +67,8 @@
     display:inline-flex;
     align-items:center;
     gap:8px;
-    background:rgba(196,149,58,0.15);
-    border:1px solid rgba(196,149,58,0.4);
+    background:rgba(224,32,32,0.15);
+    border:1px solid rgba(224,32,32,0.4);
     color:var(--gold);
     font-size:13px;
     font-weight:600;
@@ -195,7 +195,7 @@
   }
   input:focus, select:focus, textarea:focus {
     border-color:var(--navy);
-    box-shadow:0 0 0 3px rgba(11,26,47,0.08);
+    box-shadow:0 0 0 3px rgba(224,32,32,0.12);
   }
   textarea { resize:vertical; min-height:100px; line-height:1.6; }
   select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:40px; cursor:pointer; }
@@ -232,7 +232,7 @@
     font-size:11px;
     color:transparent;
   }
-  .check-item.checked { border-color:var(--navy); background:rgba(11,26,47,0.04); }
+  .check-item.checked { border-color:var(--navy); background:rgba(224,32,32,0.06); }
   .check-item.checked .check-box { background:var(--navy); border-color:var(--navy); color:var(--white); }
   .check-item.checked .check-box::after { content:'✓'; }
 
@@ -289,7 +289,7 @@
     background:var(--white);
   }
   .budget-card:hover { border-color:var(--navy); }
-  .budget-card.selected { border-color:var(--gold); background:rgba(196,149,58,0.06); }
+  .budget-card.selected { border-color:var(--gold); background:rgba(224,32,32,0.06); }
   .budget-card input { display:none; }
   .budget-name { font-size:15px; font-weight:700; color:var(--navy); margin-bottom:4px; }
   .budget-price { font-size:20px; font-weight:700; color:var(--gold); margin-bottom:6px; }
@@ -317,7 +317,7 @@
   }
   .btn-back:hover { border-color:var(--navy); color:var(--navy); }
   .btn-next {
-    background:var(--navy);
+    background:var(--red);
     color:var(--white);
     padding:14px 36px;
     border-radius:8px;
@@ -330,7 +330,7 @@
     flex:1;
     max-width:280px;
   }
-  .btn-next:hover { background:#132240; transform:translateY(-1px); }
+  .btn-next:hover { background:#CC0000; transform:translateY(-1px); }
   .btn-submit {
     background:var(--gold);
     color:var(--white);
@@ -345,7 +345,7 @@
     flex:1;
     max-width:320px;
   }
-  .btn-submit:hover { background:#D4A84A; transform:translateY(-1px); }
+  .btn-submit:hover { background:#CC0000; transform:translateY(-1px); }
 
   /* ERROR */
   .field-error { font-size:12px; color:var(--red); margin-top:5px; font-weight:500; display:none; }
@@ -454,16 +454,10 @@
       <div class="field-error">Required</div>
     </div>
 
-    <div class="field-row">
-      <div class="field-group" id="fg-email">
-        <label>Email <span class="req">*</span></label>
-        <input type="email" id="email" placeholder="john@yourbusiness.com" />
-        <div class="field-error">Valid email required</div>
-      </div>
-      <div class="field-group">
-        <label>Phone <span class="hint">(optional)</span></label>
-        <input type="tel" id="phone" placeholder="(248) 555-0100" />
-      </div>
+    <div class="field-group" id="fg-email">
+      <label>Email <span class="req">*</span></label>
+      <input type="email" id="email" placeholder="john@yourbusiness.com" />
+      <div class="field-error">Valid email required</div>
     </div>
 
     <div class="field-group" id="fg-industry">
@@ -587,7 +581,7 @@
 
     <div class="field-group">
       <label>Brand Colors <span class="hint">— hex codes or just describe them</span></label>
-      <input type="text" id="brandColors" placeholder="Navy blue (#0B1A2F) and gold (#C4953A)" />
+      <input type="text" id="brandColors" placeholder="Red (#E02020), Black (#0A0A0A), White (#FFFFFF)" />
     </div>
 
     <div class="field-group">
@@ -697,7 +691,7 @@
     </div>
   </div>
 
-  <p style="font-size:14px;color:var(--muted);">Questions? Email <a href="mailto:shota@createmoreproductions.com" style="color:var(--navy)">shota@createmoreproductions.com</a> or text/call <a href="tel:+1" style="color:var(--navy)">(your number)</a></p>
+  <p style="font-size:14px;color:var(--muted);">Questions? Email <a href="mailto:shota@createmoreproductions.com" style="color:var(--red)">shota@createmoreproductions.com</a></p>
 </div>
 
 <footer>
@@ -709,15 +703,18 @@ let currentStep = 1;
 
 // VIBE SELECTOR
 document.querySelectorAll('.vibe-item').forEach(item => {
-  item.addEventListener('click', () => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
     document.querySelectorAll('.vibe-item').forEach(v => v.classList.remove('selected'));
     item.classList.add('selected');
+    item.querySelector('input').checked = true;
   });
 });
 
 // CHECKBOX ITEMS
 document.querySelectorAll('.check-item').forEach(item => {
-  item.addEventListener('click', () => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
     item.classList.toggle('checked');
     item.querySelector('input').checked = item.classList.contains('checked');
   });
@@ -804,7 +801,6 @@ function collectData() {
     lastName: document.getElementById('lastName').value.trim(),
     businessName: document.getElementById('businessName').value.trim(),
     email: document.getElementById('email').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
     industry: document.getElementById('industry').value,
     existingUrl: document.getElementById('existingUrl').value.trim(),
     businessDesc: document.getElementById('businessDesc').value.trim(),
@@ -841,9 +837,9 @@ document.getElementById('intake-form').addEventListener('submit', async (e) => {
   const msg = {
     embeds: [{
       title: '📋 New Web Brief — ' + d.businessName,
-      color: 0xC4953A,
+      color: 0xE02020,
       fields: [
-        { name: '👤 Contact', value: d.firstName + ' ' + d.lastName + '\n' + d.email + (d.phone ? '\n' + d.phone : ''), inline: true },
+        { name: '👤 Contact', value: d.firstName + ' ' + d.lastName + '\n' + d.email, inline: true },
         { name: '🏢 Business', value: d.businessName + '\n' + d.industry, inline: true },
         { name: '📦 Package', value: d.package || 'Not selected', inline: true },
         { name: '🎯 Primary Goal', value: d.primaryAction + (d.ctaUrl ? '\n' + d.ctaUrl : ''), inline: false },
@@ -866,7 +862,7 @@ document.getElementById('intake-form').addEventListener('submit', async (e) => {
   };
 
   try {
-    const WEBHOOK = 'DISCORD_WEBHOOK_PLACEHOLDER';
+    const WEBHOOK = 'https://discord.com/api/webhooks/1474662040114036896/jTIJRTIW0w8bHLs1kOb9Njt8CkFDvO1A4AFt4iXSs61xFrPCZTZyD2iXUSujbnGkngMZ';
     if (WEBHOOK && WEBHOOK !== 'DISCORD_WEBHOOK_PLACEHOLDER') {
       await fetch(WEBHOOK, {
         method: 'POST',
