@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-22",
+  "lastUpdated": "2026-02-23",
   "projects": [
     {
       "id": "cmp-001",
@@ -76,6 +76,33 @@
       "milestones": [
         { "label": "Brief Received", "date": "2026-02-21", "done": true },
         { "label": "V1 Built", "date": "2026-02-21", "done": true },
+        { "label": "Internal QC", "date": null, "done": false },
+        { "label": "Client Review", "date": null, "done": false },
+        { "label": "Revisions Done", "date": null, "done": false },
+        { "label": "Launched", "date": null, "done": false }
+      ]
+    },
+    {
+      "id": "osp-001",
+      "clientName": "Bassam Chahine",
+      "businessName": "One Source Provider",
+      "industry": "Business Development / Holding Company",
+      "email": "bassam.chahine@onesourceprovider.com",
+      "phone": "313-543-8400",
+      "package": "multi",
+      "packageLabel": "Multi-Page Site",
+      "price": 5000,
+      "dateSubmitted": "2026-02-23",
+      "dateStarted": "2026-02-23",
+      "dateLaunched": null,
+      "status": "review",
+      "previewUrl": "https://osp-cmp.netlify.app",
+      "repoUrl": "",
+      "domain": "onesourceprovider.com",
+      "notes": "Bassam's main holding company (3 divisions: Marketing, Sports, Health). V1 built — awaiting Shota QC before showing to Bassam.",
+      "milestones": [
+        { "label": "Brief Received", "date": "2026-02-23", "done": true },
+        { "label": "V1 Built", "date": "2026-02-23", "done": true },
         { "label": "Internal QC", "date": null, "done": false },
         { "label": "Client Review", "date": null, "done": false },
         { "label": "Revisions Done", "date": null, "done": false },
